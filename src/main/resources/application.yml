@@ -1,6 +1,10 @@
+spring:
+  application:
+    name: "camunda-case-application"
+
 camunda:
   bpm:
     filter:
-      create: All
+      create: "All"
     admin-user:
-      id: admin
+      id: "admin"
