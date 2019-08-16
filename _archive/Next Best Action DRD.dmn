@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" id="Definitions_09g6c32" name="DRD" namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="Decision_1w1zarw" name="Verpflichtung geltent machen">
+    <extensionElements>
+      <biodi:bounds x="588" y="579" width="180" height="80" />
+      <biodi:edge source="InputData_1tq95vf">
+        <biodi:waypoints x="347" y="541" />
+        <biodi:waypoints x="353" y="477" />
+      </biodi:edge>
+      <biodi:edge source="Decision_1lm5bbe">
+        <biodi:waypoints x="435" y="577" />
+        <biodi:waypoints x="590" y="481" />
+      </biodi:edge>
+    </extensionElements>
+    <decisionTable id="DecisionTable_08o06sy">
+      <input id="InputClause_0a5rhl2">
+        <inputExpression id="LiteralExpression_1567uue" typeRef="string" />
+      </input>
+      <output id="OutputClause_0lcv81u" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <decision id="Decision_06nkf6o" name="Lohnpfändung">
+    <extensionElements>
+      <biodi:bounds x="803" y="579" width="180" height="80" />
+      <biodi:edge source="InputData_1bao8du">
+        <biodi:waypoints x="872" y="701" />
+        <biodi:waypoints x="885" y="659" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredInput href="#InputData_1bao8du" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_0fike3d">
+      <input id="InputClause_14ua4hx">
+        <inputExpression id="LiteralExpression_1bost65" typeRef="string" />
+      </input>
+      <output id="OutputClause_1ywpl46" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <inputData id="InputData_1tq95vf" name="Addressstatus">
+    <extensionElements>
+      <biodi:bounds x="300" y="699" width="125" height="45" />
+    </extensionElements>
+  </inputData>
+  <decision id="Decision_1lm5bbe" name="Verfügbare Kommunikationskanäle">
+    <extensionElements>
+      <biodi:bounds x="281" y="577" width="180" height="80" />
+      <biodi:edge source="InputData_1tq95vf">
+        <biodi:waypoints x="364" y="699" />
+        <biodi:waypoints x="368" y="657" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredInput href="#InputData_1tq95vf" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_1qaxfdw">
+      <input id="InputClause_1ymmm1w">
+        <inputExpression id="LiteralExpression_1gmj29i" typeRef="string" />
+      </input>
+      <output id="OutputClause_17r8zvi" typeRef="string" />
+    </decisionTable>
+  </decision>
+  <decision id="Decision_08b49be" name="Mögliche Aktivitäten">
+    <extensionElements>
+      <biodi:bounds x="690" y="437" width="180" height="80" />
+      <biodi:edge source="Decision_1w1zarw">
+        <biodi:waypoints x="706" y="579" />
+        <biodi:waypoints x="750" y="517" />
+      </biodi:edge>
+      <biodi:edge source="Decision_06nkf6o">
+        <biodi:waypoints x="862" y="579" />
+        <biodi:waypoints x="815" y="517" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredDecision href="#Decision_1w1zarw" />
+    </informationRequirement>
+    <informationRequirement>
+      <requiredDecision href="#Decision_06nkf6o" />
+    </informationRequirement>
+  </decision>
+  <decision id="Decision_1prwcaq" name="Mögliche Aktivitätsvariantenketten">
+    <extensionElements>
+      <biodi:bounds x="444" y="172" width="180" height="80" />
+      <biodi:edge source="Decision_1k989fm">
+        <biodi:waypoints x="618" y="295" />
+        <biodi:waypoints x="580" y="252" />
+      </biodi:edge>
+      <biodi:edge source="Decision_1lm5bbe">
+        <biodi:waypoints x="389" y="577" />
+        <biodi:waypoints x="531" y="258" />
+      </biodi:edge>
+      <biodi:edge source="Decision_1p74qhe">
+        <biodi:waypoints x="812" y="298" />
+        <biodi:waypoints x="624" y="222" />
+      </biodi:edge>
+      <biodi:edge source="Decision_1y8q6hu">
+        <biodi:waypoints x="410" y="296" />
+        <biodi:waypoints x="483" y="252" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredDecision href="#Decision_1k989fm" />
+    </informationRequirement>
+    <informationRequirement>
+      <requiredDecision href="#Decision_1p74qhe" />
+    </informationRequirement>
+    <informationRequirement>
+      <requiredDecision href="#Decision_1y8q6hu" />
+    </informationRequirement>
+  </decision>
+  <decision id="Decision_1k989fm" name="Nicht mögliche Aktivitätsvarianten">
+    <extensionElements>
+      <biodi:bounds x="564" y="295" width="180" height="80" />
+      <biodi:edge source="Decision_08b49be">
+        <biodi:waypoints x="747" y="437" />
+        <biodi:waypoints x="697" y="375" />
+      </biodi:edge>
+      <biodi:edge source="Decision_1lm5bbe">
+        <biodi:waypoints x="403" y="577" />
+        <biodi:waypoints x="564" y="373" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredDecision href="#Decision_08b49be" />
+    </informationRequirement>
+    <informationRequirement>
+      <requiredDecision href="#Decision_1lm5bbe" />
+    </informationRequirement>
+  </decision>
+  <inputData id="InputData_1bao8du" name="Arbeitgeber">
+    <extensionElements>
+      <biodi:bounds x="802" y="701" width="125" height="45" />
+    </extensionElements>
+  </inputData>
+  <decision id="Decision_1p74qhe" name="Mögliche Aktivitätsvarianten">
+    <extensionElements>
+      <biodi:bounds x="812" y="294" width="180" height="80" />
+      <biodi:edge source="Decision_08b49be">
+        <biodi:waypoints x="826" y="437" />
+        <biodi:waypoints x="897" y="374" />
+      </biodi:edge>
+      <biodi:edge source="Decision_1lm5bbe">
+        <biodi:waypoints x="439" y="577" />
+        <biodi:waypoints x="812" y="356" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredDecision href="#Decision_08b49be" />
+    </informationRequirement>
+    <informationRequirement>
+      <requiredDecision href="#Decision_1lm5bbe" />
+    </informationRequirement>
+  </decision>
+  <inputData id="InputData_05qrmxu" name="Hilfsaktivitäten">
+    <extensionElements>
+      <biodi:bounds x="229" y="413" width="125" height="45" />
+    </extensionElements>
+  </inputData>
+  <decision id="Decision_13nychf" name="Alle Aktivitätsvariantenketten bewerten">
+    <extensionElements>
+      <biodi:bounds x="447" y="49" width="180" height="80" />
+      <biodi:edge source="Decision_1prwcaq">
+        <biodi:waypoints x="538" y="172" />
+        <biodi:waypoints x="541" y="129" />
+      </biodi:edge>
+      <biodi:edge source="BusinessKnowledgeModel_1nsmyk0">
+        <biodi:waypoints x="735" y="100" />
+        <biodi:waypoints x="627" y="90" />
+      </biodi:edge>
+    </extensionElements>
+    <variable id="InformationItem_16pgfve" />
+    <informationRequirement>
+      <requiredDecision href="#Decision_1prwcaq" />
+    </informationRequirement>
+    <knowledgeRequirement>
+      <requiredKnowledge href="#BusinessKnowledgeModel_1nsmyk0" />
+    </knowledgeRequirement>
+    <literalExpression id="LiteralExpression_159y2au" />
+  </decision>
+  <decision id="Decision_0qp7mty" name="Next Best Action">
+    <extensionElements>
+      <biodi:bounds x="443" y="-164" width="180" height="80" />
+      <biodi:edge source="Decision_1wjt3cg">
+        <biodi:waypoints x="544" y="-57" />
+        <biodi:waypoints x="551" y="-84" />
+      </biodi:edge>
+    </extensionElements>
+    <variable id="InformationItem_0esus8n" />
+    <informationRequirement>
+      <requiredDecision href="#Decision_1wjt3cg" />
+    </informationRequirement>
+    <literalExpression id="LiteralExpression_1qa9p7s" />
+  </decision>
+  <decision id="Decision_1wjt3cg" name="Next Best Kette">
+    <extensionElements>
+      <biodi:bounds x="444" y="-57" width="180" height="80" />
+      <biodi:edge source="Decision_13nychf">
+        <biodi:waypoints x="540" y="49" />
+        <biodi:waypoints x="543" y="23" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredDecision href="#Decision_13nychf" />
+    </informationRequirement>
+  </decision>
+  <businessKnowledgeModel id="BusinessKnowledgeModel_1nsmyk0" name="Bewertung">
+    <extensionElements>
+      <biodi:bounds x="735" y="84" width="135" height="46" />
+    </extensionElements>
+  </businessKnowledgeModel>
+  <decision id="Decision_1y8q6hu" name="Hilfsaktivitäten zu Aktivitäten">
+    <extensionElements>
+      <biodi:bounds x="254" y="296" width="180" height="80" />
+      <biodi:edge source="InputData_05qrmxu">
+        <biodi:waypoints x="307" y="413" />
+        <biodi:waypoints x="330" y="376" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredInput href="#InputData_05qrmxu" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_0cdz572">
+      <input id="InputClause_0zubvek">
+        <inputExpression id="LiteralExpression_09pnvpb" typeRef="string" />
+      </input>
+      <output id="OutputClause_06x0e66" typeRef="string" />
+    </decisionTable>
+  </decision>
+</definitions>
