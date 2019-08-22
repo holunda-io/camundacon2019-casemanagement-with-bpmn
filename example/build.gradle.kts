@@ -30,8 +30,6 @@ dependencies {
   // TEST
   //
   testImplementation("org.jetbrains.kotlin:kotlin-test")
-
-  // Use the Kotlin JUnit integration.
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
 
