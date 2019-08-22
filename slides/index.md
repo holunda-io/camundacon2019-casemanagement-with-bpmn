@@ -110,6 +110,12 @@ we would have stopped here. CMMN to the rescue
 
 --->
 
+# CMMN Core
+
+![](img/TaskStageLifecycle.png)
+
+--->
+
 ## What next?
 
 * support more cmmn features with lib
