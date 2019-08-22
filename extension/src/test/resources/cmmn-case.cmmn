@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cmmn:definitions xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:cmmn="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0a1qq2d" targetNamespace="http://bpmn.io/schema/cmmn">
+<cmmn:definitions xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:cmmn="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/cmmn" id="Definitions_0a1qq2d" targetNamespace="http://bpmn.io/schema/cmmn" exporter="Camunda Modeler" exporterVersion="3.2.3">
   <cmmn:case id="Case_0ddkabk">
     <cmmn:casePlanModel id="CasePlanModel_0xlqj3q" name="A CasePlanModel">
-      <cmmn:planItem id="PlanItem_1" definitionRef="Task_1" />
+      <cmmn:planItem id="PlanItem_1" definitionRef="Task_1">
+        <cmmn:itemControl id="PlanItemControl_1ojlepk">
+          <cmmn:repetitionRule id="RepetitionRule_04eu6ed" camunda:repeatOnStandardEvent="complete" />
+          <cmmn:requiredRule id="RequiredRule_1lg754x" />
+          <cmmn:manualActivationRule id="ManualActivationRule_1kl2nlu" />
+        </cmmn:itemControl>
+      </cmmn:planItem>
+      <cmmn:planItem id="PlanItem_0js47lt" definitionRef="Task_0psxprc" />
       <cmmn:task id="Task_1" />
+      <cmmn:task id="Task_0psxprc" />
     </cmmn:casePlanModel>
   </cmmn:case>
   <cmmndi:CMMNDI>
@@ -15,6 +23,10 @@
       </cmmndi:CMMNShape>
       <cmmndi:CMMNShape id="PlanItem_1_di" cmmnElementRef="PlanItem_1">
         <dc:Bounds x="190" y="132" width="100" height="80" />
+        <cmmndi:CMMNLabel />
+      </cmmndi:CMMNShape>
+      <cmmndi:CMMNShape id="PlanItem_0js47lt_di" cmmnElementRef="PlanItem_0js47lt">
+        <dc:Bounds x="400" y="159" width="100" height="80" />
         <cmmndi:CMMNLabel />
       </cmmndi:CMMNShape>
     </cmmndi:CMMNDiagram>

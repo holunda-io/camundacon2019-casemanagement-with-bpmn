@@ -1,4 +1,4 @@
-package io.holunda.extension.cmmn
+package io.holunda.extension.casemanagement
 
 import org.camunda.bpm.engine.ProcessEngineConfiguration
 import org.camunda.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration

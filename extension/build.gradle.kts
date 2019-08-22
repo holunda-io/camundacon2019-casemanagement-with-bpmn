@@ -6,6 +6,8 @@ plugins {
 
 dependencies {
 
+  api("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
+
   implementation(platform("org.camunda.bpm:camunda-bom:${Versions.camunda}"))
 
   //
