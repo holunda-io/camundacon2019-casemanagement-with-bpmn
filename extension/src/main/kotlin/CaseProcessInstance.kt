@@ -13,7 +13,6 @@ abstract class CaseProcessInstance(
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
 ) : ProcessInstance by processInstance {
 
-
   val caseProcessDefinition = objectMapper.readValue<CaseProcessDefinition>(runtimeService.getVariable(
       processInstanceId,
       CaseProcess.VARIABLES.caseProcessDefinition) as String

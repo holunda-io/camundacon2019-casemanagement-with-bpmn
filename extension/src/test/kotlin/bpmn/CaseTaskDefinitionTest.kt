@@ -7,7 +7,6 @@ import io.holunda.extension.casemanagement.cmmn.RepetitionRule
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.model.bpmn.Bpmn
 import org.junit.Test
-import sun.lwawt.macosx.CPrinterDevice
 
 class CaseTaskDefinitionTest {
 
@@ -29,7 +28,7 @@ class CaseTaskDefinitionTest {
   @Test
   fun `convert json`() {
     val objectMapper = jacksonObjectMapper()
-    val task = CaseTaskDefinition(id = "1", name = "task", type = CmmnType.HUMAN_TASK, repetitionRule = RepetitionRule.COMPLETE, manualStart = false, required = false)
+    val task = CaseTaskDefinition(key = "1", name = "task", type = CmmnType.HUMAN_TASK, repetitionRule = RepetitionRule.COMPLETE, manualStart = false, required = false)
 
     val def = CaseProcessDefinition(mapOf("1" to task))
 

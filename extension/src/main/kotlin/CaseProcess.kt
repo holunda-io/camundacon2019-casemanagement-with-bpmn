@@ -1,11 +1,12 @@
 package io.holunda.extension.casemanagement
 
+import io.holunda.extension.casemanagement.command.StartProcessCommand
 import io.holunda.extension.casemanagement.listener.CaseProcessStartListener
-import io.holunda.extension.cmmn.command.StartProcessCommand
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.engine.runtime.ProcessInstance
+import java.lang.IllegalStateException
 
 abstract class CaseProcess<C : StartProcessCommand, I : CaseProcessInstance>(
     val runtimeService: RuntimeService,
@@ -17,6 +18,8 @@ abstract class CaseProcess<C : StartProcessCommand, I : CaseProcessInstance>(
 
   object VARIABLES {
     val caseProcessDefinition = "caseProcessDefinition"
+    val taskStageLifecycle = "taskStageLifecycle"
+    val bpmnCaseExecutionEntities = "bpmnCaseExecutionEntities"
   }
 
   abstract val key: String
@@ -30,6 +33,14 @@ abstract class CaseProcess<C : StartProcessCommand, I : CaseProcessInstance>(
   }
 
   fun onStart(): ExecutionListener = CaseProcessStartListener()
+
+  fun findByBusinessKey(businessKey:String) = runtimeService.createProcessInstanceQuery()
+      .processInstanceBusinessKey(businessKey)
+      .processDefinitionKey(key)
+      .active()
+      .singleResult()?:null
+
+  fun loadForBusinessKey(businessKey:String) = findByBusinessKey(businessKey) ?: throw IllegalStateException("no processInstance found with key=$key and businessKey=$businessKey")
 
   abstract fun wrap(processInstance: ProcessInstance): I
 }

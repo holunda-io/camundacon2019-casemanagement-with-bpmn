@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_011vt5z" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.2.3">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_011vt5z" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.3.1">
   <bpmn:process id="dummy_case_process" name="Dummy Case Process" isExecutable="true" camunda:versionTag="1">
     <bpmn:extensionElements>
       <camunda:executionListener delegateExpression="${dummyCaseProcess.onStart()}" event="start" />
@@ -16,7 +16,7 @@
       <bpmn:incoming>SequenceFlow_0uqvh8l</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0uqvh8l" sourceRef="keep_alive" targetRef="EndEvent_04ijgen" />
-    <bpmn:subProcess id="task_telefonische_mahnung" name="manual start, no repetition" triggeredByEvent="true">
+    <bpmn:subProcess id="manualStart_repetitionNone" name="manual start, no repetition" triggeredByEvent="true">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="cmmnType" value="humanTask" />
@@ -37,14 +37,14 @@
           <camunda:property name="cmmnType" value="humanTask" />
         </camunda:properties>
       </bpmn:extensionElements>
-      <bpmn:startEvent id="StartEvent_00l2420" isInterrupting="false">
-        <bpmn:outgoing>SequenceFlow_0u3zzlb</bpmn:outgoing>
-        <bpmn:signalEventDefinition signalRef="Signal_0sr54nm" />
-      </bpmn:startEvent>
       <bpmn:sequenceFlow id="SequenceFlow_0u3zzlb" sourceRef="StartEvent_00l2420" targetRef="ut_should_start_automatically_and_run_only_once" />
       <bpmn:userTask id="ut_should_start_automatically_and_run_only_once" name="Run automatically ">
         <bpmn:incoming>SequenceFlow_0u3zzlb</bpmn:incoming>
       </bpmn:userTask>
+      <bpmn:startEvent id="StartEvent_00l2420" isInterrupting="false">
+        <bpmn:outgoing>SequenceFlow_0u3zzlb</bpmn:outgoing>
+        <bpmn:signalEventDefinition id="SignalEventDefinition_0dn7y7v" signalRef="Signal_0vgyx94" />
+      </bpmn:startEvent>
     </bpmn:subProcess>
     <bpmn:subProcess id="manualStart_repetitionComplete" name="manual start, repetition rule: complete" triggeredByEvent="true">
       <bpmn:extensionElements>
@@ -70,6 +70,7 @@
   <bpmn:message id="Message_11dtaor" name="Message_2bvnuu2" />
   <bpmn:signal id="Signal_0sr54nm" name="Signal_28bbm57" />
   <bpmn:signal id="Signal_019j0lz" name="Signal_1u0cali" />
+  <bpmn:signal id="Signal_0vgyx94" name="runAutomatically_repetitionNone_${execution.processInstanceId}" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="dummy_case_process">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
@@ -89,7 +90,7 @@
         <di:waypoint x="490" y="177" />
         <di:waypoint x="542" y="177" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SubProcess_1g1ecar_di" bpmnElement="task_telefonische_mahnung" isExpanded="true">
+      <bpmndi:BPMNShape id="SubProcess_1g1ecar_di" bpmnElement="manualStart_repetitionNone" isExpanded="true">
         <dc:Bounds x="160" y="280" width="350" height="200" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_06z5wkz_di" bpmnElement="TextAnnotation_06z5wkz">
@@ -112,9 +113,6 @@
       <bpmndi:BPMNShape id="SubProcess_1xm67au_di" bpmnElement="runAutomatically_repetitionNone" isExpanded="true">
         <dc:Bounds x="540" y="280" width="350" height="200" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="StartEvent_06cuc4x_di" bpmnElement="StartEvent_00l2420">
-        <dc:Bounds x="580" y="362" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0u3zzlb_di" bpmnElement="SequenceFlow_0u3zzlb">
         <di:waypoint x="616" y="380" />
         <di:waypoint x="670" y="380" />
@@ -135,6 +133,9 @@
         <di:waypoint x="236" y="600" />
         <di:waypoint x="290" y="600" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_02mlowv_di" bpmnElement="StartEvent_00l2420">
+        <dc:Bounds x="580" y="362" width="36" height="36" />
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

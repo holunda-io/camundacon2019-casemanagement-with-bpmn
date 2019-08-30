@@ -1,31 +1,9 @@
 package io.holunda.extension.casemanagement.cmmn
 
-import org.camunda.bpm.engine.impl.cmmn.execution.CaseExecutionState
-
 data class TaskStageLifecycle(val tasks: Map<String, String>) {
 
 }
 
-enum class CaseTaskState(val state: CaseExecutionState) {
-  NEW(CaseExecutionState.NEW),
-  AVAILABLE(CaseExecutionState.AVAILABLE),
-  ENABLED(CaseExecutionState.ENABLED),
-  DISABLED(CaseExecutionState.DISABLED),
-  ACTIVE(CaseExecutionState.ACTIVE),
-  SUSPENDED(CaseExecutionState.SUSPENDED),
-  TERMINATED(CaseExecutionState.TERMINATED),
-  COMPLETED(CaseExecutionState.COMPLETED),
-  FAILED(CaseExecutionState.FAILED),
-  CLOSED(CaseExecutionState.CLOSED)
-  ;
-
-  val statusCode: Int by lazy {
-    state.stateCode
-  }
-  val statusName: String by lazy {
-    state.toString()
-  }
-}
 //
 //val NEW: CaseExecutionState = CaseExecutionStateImpl(0, "new")
 //val AVAILABLE: CaseExecutionState = CaseExecutionStateImpl(1, "available")

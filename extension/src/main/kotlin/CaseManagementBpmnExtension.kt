@@ -7,3 +7,9 @@ import kotlin.reflect.KClass
 interface EnumWithValue {
   val value : String
 }
+
+interface CaseTaskKey {
+  val key: String
+}
+
+

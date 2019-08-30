@@ -6,12 +6,33 @@ import org.camunda.bpm.model.bpmn.BpmnModelInstance
 import org.camunda.bpm.model.bpmn.instance.SubProcess
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 
+/**
+ * Holds all information available by parsing the extension elements of an embedded subprocess in the
+ * BPMN model that should behave as a case task.
+ *
+ * This configuration is not changed after the process is started and used by one or many (depending on the repetition rule)
+ * concrete BpmnCaseExecutions that are started during the case (process) lifecycle.
+ */
+data class CaseTaskDefinition(
+    val key: String,
+    val name: String,
+    val type: CmmnType,
+    val repetitionRule: RepetitionRule,
+    val manualStart: Boolean,
+    val required: Boolean,
+    val sentryOnPartExpression: String? = null
+) {
+  val hasSentry = sentryOnPartExpression != null
+}
+
+
+
 private fun CamundaProperties.asMap() = this.camundaProperties.map { it.camundaName to it.camundaValue }.toMap()
 
 /**
  * Helper to parse camunda extension properties
  */
-data class CamundaCmmnProperties(
+private data class CamundaCmmnProperties(
     val type: CmmnType?,
     val repetitionRule: RepetitionRule?
 ) {
@@ -43,7 +64,7 @@ fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
 
     if (properties.type != null) {
       elements[subProcess.id] = CaseTaskDefinition(
-          id = subProcess.id,
+          key = subProcess.id,
           name = subProcess.name,
           type = properties.type,
           repetitionRule = properties.repetitionRule ?: RepetitionRule.NONE,
@@ -58,12 +79,3 @@ fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
 
 
 data class CaseProcessDefinition(val tasks: Map<String, CaseTaskDefinition>)
-
-data class CaseTaskDefinition(
-    val id: String,
-    val name: String,
-    val type: CmmnType,
-    val repetitionRule: RepetitionRule,
-    val manualStart: Boolean,
-    val required: Boolean
-)
