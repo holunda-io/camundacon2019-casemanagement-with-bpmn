@@ -3,8 +3,8 @@ package io.holunda.extension.casemanagement.persistence
 import cmmn.BpmnCaseExecutionState
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.assertj.core.api.Assertions.*
-import org.junit.Assert
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicReference
 
@@ -60,16 +60,14 @@ class BpmnCaseExecutionProcessVariableRepositoryTest {
 
   @Test
   fun `find by caseTaskKey`() {
-    val f1 = repository.save(BpmnCaseExecutionEntity("foo"))
+    repository.save(BpmnCaseExecutionEntity("foo"))
     val b1 = repository.save(BpmnCaseExecutionEntity("bar"))
     val b2 = repository.save(BpmnCaseExecutionEntity("bar"))
 
     val list = repository.findByCaseTaskKey("bar")
 
-    assertThat(list).containsExactlyInAnyOrder(b1,b2)
+    assertThat(list).containsExactlyInAnyOrder(b1, b2)
   }
-
-
 
   @Test
   fun `repository can commit to store`() {
@@ -80,8 +78,8 @@ class BpmnCaseExecutionProcessVariableRepositoryTest {
     val storingRepository = BpmnCaseExecutionProcessVariableRepository(
         executions = mutableListOf(),
         commit = {
-      store.set(om.writeValueAsString(BpmnCaseExecutionEntities(it)))
-    }
+          store.set(om.writeValueAsString(BpmnCaseExecutionEntities(it)))
+        }
     )
 
     assertThat(store.get()).isNull()
