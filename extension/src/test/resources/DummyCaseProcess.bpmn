@@ -20,10 +20,11 @@
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="cmmnType" value="humanTask" />
+          <camunda:property name="cmmnManualStart" value="true" />
         </camunda:properties>
       </bpmn:extensionElements>
-      <bpmn:sequenceFlow id="SequenceFlow_0gpm9ji" sourceRef="StartEvent_0blntav" targetRef="Task_0x4tba2" />
-      <bpmn:userTask id="Task_0x4tba2" name="Sub task">
+      <bpmn:sequenceFlow id="SequenceFlow_0gpm9ji" sourceRef="StartEvent_0blntav" targetRef="ut_manualStart_repetitionNone" />
+      <bpmn:userTask id="ut_manualStart_repetitionNone" name="Sub task">
         <bpmn:incoming>SequenceFlow_0gpm9ji</bpmn:incoming>
       </bpmn:userTask>
       <bpmn:startEvent id="StartEvent_0blntav" isInterrupting="false">
@@ -51,6 +52,7 @@
         <camunda:properties>
           <camunda:property name="cmmnType" value="humanTask" />
           <camunda:property name="cmmnRepetitionRule" value="complete" />
+          <camunda:property name="cmmnManualStart" value="true" />
         </camunda:properties>
       </bpmn:extensionElements>
       <bpmn:startEvent id="StartEvent_1ubv5iv" isInterrupting="false">
@@ -104,7 +106,7 @@
         <di:waypoint x="236" y="380" />
         <di:waypoint x="290" y="380" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_1chdxcz_di" bpmnElement="Task_0x4tba2">
+      <bpmndi:BPMNShape id="UserTask_1chdxcz_di" bpmnElement="ut_manualStart_repetitionNone">
         <dc:Bounds x="290" y="340" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_066v3xi_di" bpmnElement="StartEvent_0blntav">

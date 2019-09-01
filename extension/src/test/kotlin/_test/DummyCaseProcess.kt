@@ -2,6 +2,7 @@ package _test
 
 import io.holunda.extension.casemanagement.CaseProcess
 import io.holunda.extension.casemanagement.CaseProcessInstance
+import io.holunda.extension.casemanagement.CaseProcessInstanceWrapper
 import io.holunda.extension.casemanagement.CaseTaskKey
 import io.holunda.extension.casemanagement.command.StartProcessCommand
 import org.camunda.bpm.engine.RepositoryService
@@ -42,4 +43,4 @@ data class Start(override val businessKey: String = UUID.randomUUID().toString()
   override val variables = Variables.createVariables()!!
 }
 
-class DummyCaseProcessInstance(processInstance: ProcessInstance, runtimeService: RuntimeService) : CaseProcessInstance(processInstance, runtimeService)
+class DummyCaseProcessInstance(processInstance: ProcessInstance, runtimeService: RuntimeService) : CaseProcessInstanceWrapper(processInstance, runtimeService)

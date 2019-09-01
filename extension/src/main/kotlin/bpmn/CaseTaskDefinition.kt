@@ -34,7 +34,8 @@ private fun CamundaProperties.asMap() = this.camundaProperties.map { it.camundaN
  */
 private data class CamundaCmmnProperties(
     val type: CmmnType?,
-    val repetitionRule: RepetitionRule?
+    val repetitionRule: RepetitionRule?,
+    val manualStart: Boolean?
 ) {
   companion object {
 
@@ -48,7 +49,8 @@ private data class CamundaCmmnProperties(
     operator fun invoke(properties: CamundaProperties): CamundaCmmnProperties = invoke(properties.asMap())
     operator fun invoke(properties: Map<String, String>): CamundaCmmnProperties = CamundaCmmnProperties(
         type = CmmnType.byValue(properties),
-        repetitionRule = RepetitionRule.byValue(properties)
+        repetitionRule = RepetitionRule.byValue(properties),
+        manualStart = properties["cmmnManualStart"]?.toBoolean()
     )
   }
 }
@@ -68,7 +70,7 @@ fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
           name = subProcess.name,
           type = properties.type,
           repetitionRule = properties.repetitionRule ?: RepetitionRule.NONE,
-          manualStart = false,
+          manualStart = properties.manualStart?:false,
           required = false
       )
     }

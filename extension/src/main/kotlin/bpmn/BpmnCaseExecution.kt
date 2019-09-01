@@ -31,10 +31,11 @@ data class BpmnCaseExecution(
   override fun isRequired(): Boolean = taskDefinition.required
 
   override fun getCaseInstanceId() = processInstanceId
-  override fun getCaseDefinitionId()= processDefinitionId
+  override fun getCaseDefinitionId() = processDefinitionId
 
   // things we do not need so far
   override fun getParentId(): String? = null
+
   override fun getTenantId(): String? = null
-  override fun getActivityDescription()  : String? = null
+  override fun getActivityDescription(): String? = null
 }
