@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_011vt5z" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.3.1">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_011vt5z" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.3.2">
   <bpmn:process id="dummy_case_process" name="Dummy Case Process" isExecutable="true" camunda:versionTag="1">
     <bpmn:extensionElements>
-      <camunda:executionListener delegateExpression="${dummyCaseProcess.onStart()}" event="start" />
+      <camunda:executionListener delegateExpression="${dummyCaseProcess.onProcessStart()}" event="start" />
     </bpmn:extensionElements>
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>SequenceFlow_0g96nd1</bpmn:outgoing>
@@ -22,6 +22,8 @@
           <camunda:property name="cmmnType" value="humanTask" />
           <camunda:property name="cmmnManualStart" value="true" />
         </camunda:properties>
+        <camunda:executionListener delegateExpression="${dummyCaseProcess.onCaseExecutionStart()}" event="start" />
+        <camunda:executionListener delegateExpression="${dummyCaseProcess.onCaseExecutionComplete()}" event="end" />
       </bpmn:extensionElements>
       <bpmn:sequenceFlow id="SequenceFlow_0gpm9ji" sourceRef="StartEvent_0blntav" targetRef="ut_manualStart_repetitionNone" />
       <bpmn:userTask id="ut_manualStart_repetitionNone" name="Sub task">
@@ -29,7 +31,7 @@
       </bpmn:userTask>
       <bpmn:startEvent id="StartEvent_0blntav" isInterrupting="false">
         <bpmn:outgoing>SequenceFlow_0gpm9ji</bpmn:outgoing>
-        <bpmn:messageEventDefinition messageRef="Message_11dtaor" />
+        <bpmn:signalEventDefinition signalRef="Signal_019j0lz" />
       </bpmn:startEvent>
     </bpmn:subProcess>
     <bpmn:subProcess id="runAutomatically_repetitionNone" name="Default: run automatically,  no repetition" triggeredByEvent="true">
@@ -37,6 +39,8 @@
         <camunda:properties>
           <camunda:property name="cmmnType" value="humanTask" />
         </camunda:properties>
+        <camunda:executionListener delegateExpression="${dummyCaseProcess.onCaseExecutionStart()}" event="start" />
+        <camunda:executionListener delegateExpression="${dummyCaseProcess.onCaseExecutionComplete()}" event="end" />
       </bpmn:extensionElements>
       <bpmn:sequenceFlow id="SequenceFlow_0u3zzlb" sourceRef="StartEvent_00l2420" targetRef="ut_should_start_automatically_and_run_only_once" />
       <bpmn:userTask id="ut_should_start_automatically_and_run_only_once" name="Run automatically ">
@@ -54,15 +58,17 @@
           <camunda:property name="cmmnRepetitionRule" value="complete" />
           <camunda:property name="cmmnManualStart" value="true" />
         </camunda:properties>
+        <camunda:executionListener delegateExpression="${dummyCaseProcess.onCaseExecutionStart()}" event="start" />
+        <camunda:executionListener delegateExpression="${dummyCaseProcess.onCaseExecutionComplete()}" event="end" />
       </bpmn:extensionElements>
       <bpmn:startEvent id="StartEvent_1ubv5iv" isInterrupting="false">
         <bpmn:outgoing>SequenceFlow_0qhmvq7</bpmn:outgoing>
-        <bpmn:signalEventDefinition id="SignalEventDefinition_0n8qry6" signalRef="Signal_019j0lz" />
+        <bpmn:signalEventDefinition id="SignalEventDefinition_0n8qry6" signalRef="Signal_0sr54nm" />
       </bpmn:startEvent>
-      <bpmn:userTask id="UserTask_1ab1o0k" name="manual start">
+      <bpmn:userTask id="ut_manualStart_repetitionComplete" name="manual start">
         <bpmn:incoming>SequenceFlow_0qhmvq7</bpmn:incoming>
       </bpmn:userTask>
-      <bpmn:sequenceFlow id="SequenceFlow_0qhmvq7" sourceRef="StartEvent_1ubv5iv" targetRef="UserTask_1ab1o0k" />
+      <bpmn:sequenceFlow id="SequenceFlow_0qhmvq7" sourceRef="StartEvent_1ubv5iv" targetRef="ut_manualStart_repetitionComplete" />
     </bpmn:subProcess>
     <bpmn:textAnnotation id="TextAnnotation_06z5wkz">
       <bpmn:text>we need a criteria that keeps the outer process active</bpmn:text>
@@ -70,8 +76,8 @@
     <bpmn:association id="Association_0z20n4h" sourceRef="keep_alive" targetRef="TextAnnotation_06z5wkz" />
   </bpmn:process>
   <bpmn:message id="Message_11dtaor" name="Message_2bvnuu2" />
-  <bpmn:signal id="Signal_0sr54nm" name="Signal_28bbm57" />
-  <bpmn:signal id="Signal_019j0lz" name="Signal_1u0cali" />
+  <bpmn:signal id="Signal_0sr54nm" name="manualStart_repetitionComplete_${execution.processInstanceId}" />
+  <bpmn:signal id="Signal_019j0lz" name="manualStart_repetitionNone_${execution.processInstanceId}" />
   <bpmn:signal id="Signal_0vgyx94" name="runAutomatically_repetitionNone_${execution.processInstanceId}" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="dummy_case_process">
@@ -109,9 +115,6 @@
       <bpmndi:BPMNShape id="UserTask_1chdxcz_di" bpmnElement="ut_manualStart_repetitionNone">
         <dc:Bounds x="290" y="340" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="StartEvent_066v3xi_di" bpmnElement="StartEvent_0blntav">
-        <dc:Bounds x="200" y="362" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SubProcess_1xm67au_di" bpmnElement="runAutomatically_repetitionNone" isExpanded="true">
         <dc:Bounds x="540" y="280" width="350" height="200" />
       </bpmndi:BPMNShape>
@@ -128,7 +131,7 @@
       <bpmndi:BPMNShape id="StartEvent_1ubv5iv_di" bpmnElement="StartEvent_1ubv5iv">
         <dc:Bounds x="200" y="582" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_1ab1o0k_di" bpmnElement="UserTask_1ab1o0k">
+      <bpmndi:BPMNShape id="UserTask_1ab1o0k_di" bpmnElement="ut_manualStart_repetitionComplete">
         <dc:Bounds x="290" y="560" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0qhmvq7_di" bpmnElement="SequenceFlow_0qhmvq7">
@@ -137,6 +140,9 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="StartEvent_02mlowv_di" bpmnElement="StartEvent_00l2420">
         <dc:Bounds x="580" y="362" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0fsv6cp_di" bpmnElement="StartEvent_0blntav">
+        <dc:Bounds x="200" y="362" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

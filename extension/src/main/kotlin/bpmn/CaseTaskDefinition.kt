@@ -25,6 +25,10 @@ data class CaseTaskDefinition(
   val hasSentry = sentryOnPartExpression != null
 }
 
+/**
+ * This is the structure that is stored as json process variable.
+ */
+data class CaseProcessDefinition(val tasks: Map<String, CaseTaskDefinition>)
 
 
 private fun CamundaProperties.asMap() = this.camundaProperties.map { it.camundaName to it.camundaValue }.toMap()
@@ -79,5 +83,3 @@ fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
   return CaseProcessDefinition(elements.toMap())
 }
 
-
-data class CaseProcessDefinition(val tasks: Map<String, CaseTaskDefinition>)
