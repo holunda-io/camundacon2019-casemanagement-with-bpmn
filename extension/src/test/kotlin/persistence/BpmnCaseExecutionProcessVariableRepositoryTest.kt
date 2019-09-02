@@ -106,4 +106,33 @@ class BpmnCaseExecutionProcessVariableRepositoryTest {
     // and we can find it
     assertThat(repoCopy.findById(e.id!!)).isNotNull().isEqualTo(e)
   }
+
+  @Test
+  fun `perform query`() {
+    // no executions: empty
+    assertThat(repository.query(BpmnCaseExecutionQuery())).isEmpty()
+
+    // save 4 executions
+    val fooAvailable = repository.save(BpmnCaseExecutionEntity(caseTaskKey = "foo", state = BpmnCaseExecutionState.AVAILABLE))
+    val fooEnabled = repository.save(BpmnCaseExecutionEntity(caseTaskKey = "foo", state = BpmnCaseExecutionState.ENABLED))
+    val barAvailable = repository.save(BpmnCaseExecutionEntity(caseTaskKey = "bar", state = BpmnCaseExecutionState.AVAILABLE))
+    val barEnabled = repository.save(BpmnCaseExecutionEntity(caseTaskKey = "bar", state = BpmnCaseExecutionState.ENABLED))
+
+    // find all
+    assertThat(repository.query(BpmnCaseExecutionQuery()))
+            .containsExactlyInAnyOrder(fooAvailable, fooEnabled, barAvailable,  barEnabled)
+
+    // find by key
+    assertThat(repository.query(BpmnCaseExecutionQuery(caseTaskKey = "foo")))
+            .containsExactlyInAnyOrder(fooEnabled,fooAvailable)
+
+    // find by state
+    assertThat(repository.query(BpmnCaseExecutionQuery(state = BpmnCaseExecutionState.ENABLED)))
+            .containsExactlyInAnyOrder(fooEnabled,barEnabled)
+
+    // find by state and key
+    assertThat(repository.query(BpmnCaseExecutionQuery(caseTaskKey= "foo", state = BpmnCaseExecutionState.ENABLED)))
+            .containsExactlyInAnyOrder(fooEnabled)
+
+  }
 }
