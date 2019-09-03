@@ -80,11 +80,12 @@ class CaseProcessTest {
   @Test
   fun `a manually started caseExecution does not pollute the global variable scope`() {
     val processInstance = startProcess()
-    fun hasCaseExecutionVariable()  = camunda.runtimeService.getVariables(processInstance.processInstanceId).keys.contains(CaseProcess.VARIABLES.caseExecutionId)
+    fun hasCaseExecutionVariable() = camunda.runtimeService.getVariables(processInstance.processInstanceId).keys.contains(CaseProcess.VARIABLES.caseExecutionId)
     assertThat(hasCaseExecutionVariable()).isFalse()
 
     processInstance.startManually(manualStart_repetitionComplete.key)
 
+    // variable is not readable from global scope
     assertThat(hasCaseExecutionVariable()).isFalse()
   }
 
