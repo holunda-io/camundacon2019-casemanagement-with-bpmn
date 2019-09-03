@@ -59,8 +59,10 @@ private data class CamundaCmmnProperties(
   }
 }
 
-
-fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
+/**
+ * Parses extension elements of given bpmn model instance.
+ */
+internal fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
 
   val subProcesses = this.getModelElementsByType(SubProcess::class.java)
   val elements = mutableMapOf<String, CaseTaskDefinition>()
