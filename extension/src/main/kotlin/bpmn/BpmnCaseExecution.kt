@@ -8,6 +8,7 @@ import java.util.*
 /**
  * CaseExecution with specific properties and behavior for usage inside a CaseProcess.
  */
+@Deprecated("not really sure if we will need this")
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class BpmnCaseExecution(
     val executionId: String = UUID.randomUUID().toString(),
