@@ -25,6 +25,8 @@ interface CaseProcessInstance {
   fun findExecutions(state: BpmnCaseExecutionState? = null, key: String? = null): List<BpmnCaseExecutionEntity>
 
   fun startManually(caseTaskKey: String): Optional<String>
+
+  fun <T:Any> getVariable(key: String) : T?
 }
 
 abstract class CaseProcessInstanceWrapper(
@@ -56,14 +58,19 @@ abstract class CaseProcessInstanceWrapper(
       return Optional.empty()
     }
 
-    val execution = findExecutions(state = BpmnCaseExecutionState.ENABLED, key = caseTaskKey).first()
-
+    val execution = enabled.first()
+    val variables = Variables.putValueTyped(
+            CaseProcess.VARIABLES.caseExecutionId,
+            Variables.stringValue(execution.id, true)
+    )
 
     runtimeService.createSignalEvent("${caseTaskKey}_$processInstanceId")
         .withoutTenantId()
-        .setVariables(Variables.putValue(CaseProcess.VARIABLES.caseExecutionId, execution.id))
+        .setVariables(variables)
         .send()
 
     return Optional.of(execution.id!!)
   }
+
+  override fun <T : Any> getVariable(key: String): T? = runtimeService.getVariable(processInstanceId, key) as T?
 }

@@ -7,7 +7,6 @@ import io.holunda.extension.casemanagement.CaseProcess
 import io.holunda.extension.casemanagement.persistence.BpmCaseExecutionRepositoryFactory
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
-import org.omg.PortableInterceptor.ACTIVE
 
 
 class CaseExecutionOnStartListener(
@@ -15,7 +14,11 @@ class CaseExecutionOnStartListener(
 ) : ExecutionListener {
 
   override fun notify(execution: DelegateExecution) {
-    val caseExecutionId = execution.processInstance.getVariable(CaseProcess.VARIABLES.caseExecutionId) as String
+    // retrieve caseExecutionId and copy to local scope
+    val caseExecutionId = (execution.getVariable(CaseProcess.VARIABLES.caseExecutionId) as String).apply {
+      execution.setVariableLocal(CaseProcess.VARIABLES.caseExecutionId, this)
+    }
+
     with(BpmCaseExecutionRepositoryFactory(om).create(execution.processInstance)) {
       val caseExecution = findById(caseExecutionId)!!
           .copy(
@@ -33,14 +36,11 @@ class CaseExecutionOnCompleteListener(
     val om: ObjectMapper = jacksonObjectMapper()
 ) : ExecutionListener {
   override fun notify(execution: DelegateExecution) {
-    val caseExecutionId = execution.processInstance.getVariable(CaseProcess.VARIABLES.caseExecutionId) as String
+    val caseExecutionId = execution.getVariableLocal(CaseProcess.VARIABLES.caseExecutionId) as String
 
     with(BpmCaseExecutionRepositoryFactory(om).create(execution.processInstance)) {
       save(findById(caseExecutionId)!!.copy(state = BpmnCaseExecutionState.COMPLETED))
       commit()
     }
-
-
   }
-
 }

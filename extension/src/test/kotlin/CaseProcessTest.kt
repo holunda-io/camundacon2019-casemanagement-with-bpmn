@@ -77,6 +77,17 @@ class CaseProcessTest {
     assertThat(completed.state).isEqualTo(BpmnCaseExecutionState.COMPLETED)
   }
 
+  @Test
+  fun `a manually started caseExecution does not pollute the global variable scope`() {
+    val processInstance = startProcess()
+    fun hasCaseExecutionVariable()  = camunda.runtimeService.getVariables(processInstance.processInstanceId).keys.contains(CaseProcess.VARIABLES.caseExecutionId)
+    assertThat(hasCaseExecutionVariable()).isFalse()
+
+    processInstance.startManually(manualStart_repetitionComplete.key)
+
+    assertThat(hasCaseExecutionVariable()).isFalse()
+  }
+
   private fun startProcess(): DummyCaseProcessInstance {
     val processInstance = process.start(Start())
 
@@ -85,5 +96,3 @@ class CaseProcessTest {
     return processInstance
   }
 }
-
-
