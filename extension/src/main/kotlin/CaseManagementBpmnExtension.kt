@@ -12,4 +12,7 @@ interface CaseTaskKey {
   val key: String
 }
 
+interface ActivityId {
+  val key: String
+}
 

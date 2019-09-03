@@ -10,6 +10,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.holunda.extension.casemanagement.cmmn.RepetitionRule
 import io.holunda.extension.casemanagement.persistence.BpmCaseExecutionRepositoryFactory
 import org.assertj.core.api.Assertions.assertThat
+import org.camunda.bpm.engine.ProcessEngineServices
 import org.camunda.bpm.engine.task.Task
 import org.camunda.bpm.engine.test.Deployment
 import org.camunda.bpm.engine.test.ProcessEngineRule
@@ -52,19 +53,18 @@ class CaseProcessTest {
 
   }
 
+  private fun CaseProcessInstanceWrapper.findTask(key:String) : Task? = camunda.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskDefinitionKey(key).singleResult()
+
   @Test
   fun `manually start and stop case task`() {
     val processInstance = startProcess()
 
-    // task does not exist
-    val userTask = "ut_manualStart_repetitionComplete"
-    fun queryTask(task: String): Task? = camunda.taskService.createTaskQuery().processInstanceBusinessKey(processInstance.businessKey).taskDefinitionKey(task).singleResult()
-    assertThat(queryTask(userTask)).isNull()
+    assertThat(processInstance.findTask(DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE.key)).isNull()
 
     val started = processInstance.startManually(manualStart_repetitionComplete.key)
 
-    val task = queryTask(userTask)
-    assertThat(task).isNotNull
+    val task = processInstance.findTask(DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE.key)
+    assertThat(task).isNotNull()
 
     val entity = processInstance.repository.findById(started.get())!!
 
@@ -87,6 +87,24 @@ class CaseProcessTest {
 
     // variable is not readable from global scope
     assertThat(hasCaseExecutionVariable()).isFalse()
+  }
+
+  /**
+   * see issue #6
+   */
+  @Test
+  fun `can not start a caseExecution with repetition rule completed until the predecessor is finished`() {
+    val processInstance = startProcess()
+    assertThat(processInstance.startManually(manualStart_repetitionComplete.key)).isNotEmpty
+
+    // second start does not create a new instance
+    assertThat(processInstance.startManually(manualStart_repetitionComplete.key)).isEmpty
+
+    // complete the task
+    BpmnAwareTests.complete(processInstance.findTask(DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE.key))
+
+    // now we can start again
+    assertThat(processInstance.startManually(manualStart_repetitionComplete.key)).isNotEmpty
   }
 
   private fun startProcess(): DummyCaseProcessInstance {

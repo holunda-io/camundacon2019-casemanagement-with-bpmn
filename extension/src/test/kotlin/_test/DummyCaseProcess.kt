@@ -1,9 +1,6 @@
 package _test
 
-import io.holunda.extension.casemanagement.CaseProcess
-import io.holunda.extension.casemanagement.CaseProcessInstance
-import io.holunda.extension.casemanagement.CaseProcessInstanceWrapper
-import io.holunda.extension.casemanagement.CaseTaskKey
+import io.holunda.extension.casemanagement.*
 import io.holunda.extension.casemanagement.command.StartProcessCommand
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
@@ -32,6 +29,9 @@ class DummyCaseProcess(
     override val key = name
   }
 
+  enum class Elements(override val key: String) : ActivityId {
+    USERTASK_MS_REPETITION_COMPLETE("ut_manualStart_repetitionComplete")
+  }
 
   override fun wrap(processInstance: ProcessInstance): DummyCaseProcessInstance = DummyCaseProcessInstance(processInstance, runtimeService)
   override val key: String = KEY
