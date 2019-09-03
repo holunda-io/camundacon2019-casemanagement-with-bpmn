@@ -25,6 +25,7 @@ interface CaseProcessInstance {
   fun findExecutions(state: BpmnCaseExecutionState? = null, key: String? = null): List<BpmnCaseExecutionEntity>
 
   fun startManually(caseTaskKey: String): Optional<String>
+  fun startManually(caseTaskKey:CaseTaskKey) = startManually(caseTaskKey.key)
 
   fun <T:Any> getVariable(key: String) : T?
 }

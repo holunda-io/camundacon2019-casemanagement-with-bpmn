@@ -1,6 +1,7 @@
 package io.holunda.extension.casemanagement
 
 import _test.DummyCaseProcess
+import _test.DummyCaseProcess.Elements.*
 import _test.DummyCaseProcess.CaseTasks.manualStart_repetitionComplete
 import _test.DummyCaseProcess.CaseTasks.runAutomatically_repetitionNone
 import _test.DummyCaseProcessInstance
@@ -59,11 +60,11 @@ class CaseProcessTest {
   fun `manually start and stop case task`() {
     val processInstance = startProcess()
 
-    assertThat(processInstance.findTask(DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE.key)).isNull()
+    assertThat(processInstance.findTask(USERTASK_MS_REPETITION_COMPLETE.key)).isNull()
 
-    val started = processInstance.startManually(manualStart_repetitionComplete.key)
+    val started = processInstance.startWithRepetitionComplete()
 
-    val task = processInstance.findTask(DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE.key)
+    val task = processInstance.findTask(USERTASK_MS_REPETITION_COMPLETE.key)
     assertThat(task).isNotNull()
 
     val entity = processInstance.repository.findById(started.get())!!
@@ -83,7 +84,7 @@ class CaseProcessTest {
     fun hasCaseExecutionVariable() = camunda.runtimeService.getVariables(processInstance.processInstanceId).keys.contains(CaseProcess.VARIABLES.caseExecutionId)
     assertThat(hasCaseExecutionVariable()).isFalse()
 
-    processInstance.startManually(manualStart_repetitionComplete.key)
+    processInstance.startWithRepetitionComplete()
 
     // variable is not readable from global scope
     assertThat(hasCaseExecutionVariable()).isFalse()
@@ -95,10 +96,10 @@ class CaseProcessTest {
   @Test
   fun `can not start a caseExecution with repetition rule completed until the predecessor is finished`() {
     val processInstance = startProcess()
-    assertThat(processInstance.startManually(manualStart_repetitionComplete.key)).isNotEmpty
+    assertThat(processInstance.startWithRepetitionComplete()).isNotEmpty
 
     // second start does not create a new instance
-    assertThat(processInstance.startManually(manualStart_repetitionComplete.key)).isEmpty
+    assertThat(processInstance.startWithRepetitionComplete()).isEmpty
 
     // complete the task
     BpmnAwareTests.complete(processInstance.findTask(DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE.key))
@@ -110,8 +111,15 @@ class CaseProcessTest {
   @Test
   fun `can start a caseExecution with repetition rule manualStart anytime`() {
     val processInstance = startProcess()
-    assertThat(processInstance.startManually(DummyCaseProcess.CaseTasks.manualStart_repetitionManualStart.key)).isNotEmpty
-    assertThat(processInstance.startManually(DummyCaseProcess.CaseTasks.manualStart_repetitionManualStart.key)).isNotEmpty
+    assertThat(processInstance.startWithRepetitionManualStart()).isNotEmpty
+    assertThat(processInstance.startWithRepetitionManualStart()).isNotEmpty
+  }
+
+  @Test
+  fun `can not start a caseExecution again without repetition rule`() {
+    val processInstance = startProcess()
+    assertThat(processInstance.startWithRepetitionNone()).isNotEmpty
+    assertThat(processInstance.startWithRepetitionNone()).isEmpty
   }
 
   private fun startProcess(): DummyCaseProcessInstance {

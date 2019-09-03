@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.camunda.bpm.engine.variable.Variables
+import org.camunda.bpm.model.cmmn.instance.CaseTask
 import java.util.*
 
 class DummyCaseProcess(
@@ -44,4 +45,10 @@ data class Start(override val businessKey: String = UUID.randomUUID().toString()
   override val variables = Variables.createVariables()!!
 }
 
-class DummyCaseProcessInstance(processInstance: ProcessInstance, runtimeService: RuntimeService) : CaseProcessInstanceWrapper(processInstance, runtimeService)
+class DummyCaseProcessInstance(processInstance: ProcessInstance, runtimeService: RuntimeService) : CaseProcessInstanceWrapper(processInstance, runtimeService) {
+
+  fun startWithRepetitionNone() = startManually(DummyCaseProcess.CaseTasks.manualStart_repetitionNone)
+  fun startWithRepetitionComplete() = startManually(DummyCaseProcess.CaseTasks.manualStart_repetitionComplete)
+  fun startWithRepetitionManualStart() = startManually(DummyCaseProcess.CaseTasks.manualStart_repetitionManualStart)
+
+}
