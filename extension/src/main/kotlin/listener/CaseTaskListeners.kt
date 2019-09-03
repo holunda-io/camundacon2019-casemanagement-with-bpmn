@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.holunda.extension.casemanagement.CaseProcess
 import io.holunda.extension.casemanagement.bpmn.CaseProcessDefinition
 import io.holunda.extension.casemanagement.bpmn.CaseTaskDefinition
-import io.holunda.extension.casemanagement.cmmn.CmmnType
 import io.holunda.extension.casemanagement.cmmn.RepetitionRule
 import io.holunda.extension.casemanagement.persistence.BpmCaseExecutionRepositoryFactory
 import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionEntity
@@ -16,9 +15,8 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
 
 
-abstract class CaseTaskListener(val om: ObjectMapper = jacksonObjectMapper()) : ExecutionListener {
+abstract class CaseTaskListener(val om: ObjectMapper) : ExecutionListener {
   override fun notify(execution: DelegateExecution) = notify(CaseTaskDelegateExecution(om, execution))
-
   abstract fun notify(delegateExecution: CaseTaskDelegateExecution)
 }
 
@@ -33,12 +31,16 @@ class CaseExecutionOnStartListener(
 
     with(delegateExecution.repository) {
       val caseExecution = findById(caseExecutionId)!!
-        .copy(
-          executionId = delegateExecution.id,
-          state = BpmnCaseExecutionState.ACTIVE
-        )
-
+          .copy(
+              executionId = delegateExecution.id,
+              state = BpmnCaseExecutionState.ACTIVE
+          )
       save(caseExecution)
+
+      if (delegateExecution.repetitionRule == RepetitionRule.MANUAL_START) {
+        save(BpmnCaseExecutionEntity(caseTaskKey = delegateExecution.caseTaskDefinition.key, state = BpmnCaseExecutionState.ENABLED)) // TODO: with sentry, initial state is not enabled!
+      }
+
       commit()
     }
   }
@@ -46,13 +48,13 @@ class CaseExecutionOnStartListener(
 }
 
 class CaseExecutionOnCompleteListener(
-     om: ObjectMapper = jacksonObjectMapper()
+    om: ObjectMapper = jacksonObjectMapper()
 ) : CaseTaskListener(om) {
   override fun notify(delegateExecution: CaseTaskDelegateExecution) {
     with(delegateExecution.repository) {
       save(findById(delegateExecution.caseExecutionId)!!.copy(state = BpmnCaseExecutionState.COMPLETED))
 
-      if (delegateExecution.caseTaskDefinition.repetitionRule == RepetitionRule.COMPLETE) {
+      if (delegateExecution.repetitionRule == RepetitionRule.COMPLETE) {
         save(BpmnCaseExecutionEntity(caseTaskKey = delegateExecution.caseTaskDefinition.key, state = BpmnCaseExecutionState.ENABLED)) // TODO: with sentry, initial state is not enabled!
       }
 
@@ -62,15 +64,17 @@ class CaseExecutionOnCompleteListener(
 }
 
 data class CaseTaskDelegateExecution(
-  val om: ObjectMapper,
-  val delegateExecution: DelegateExecution
+    val om: ObjectMapper,
+    val delegateExecution: DelegateExecution
 ) : DelegateExecution by delegateExecution {
 
-  val caseTaskDefinition : CaseTaskDefinition by lazy {
+  val caseTaskDefinition: CaseTaskDefinition by lazy {
     om.readValue<CaseProcessDefinition>(getVariable(CaseProcess.VARIABLES.caseProcessDefinition) as String)
-      .tasks[currentActivityId]!!
+        .tasks[currentActivityId]!!
   }
 
   val caseExecutionId by lazy { getVariableLocal(CaseProcess.VARIABLES.caseExecutionId) as String }
-  val repository : BpmnCaseExecutionProcessVariableRepository = BpmCaseExecutionRepositoryFactory(om).create(delegateExecution)
+  val repository: BpmnCaseExecutionProcessVariableRepository = BpmCaseExecutionRepositoryFactory(om).create(delegateExecution)
+
+  val repetitionRule = caseTaskDefinition.repetitionRule
 }

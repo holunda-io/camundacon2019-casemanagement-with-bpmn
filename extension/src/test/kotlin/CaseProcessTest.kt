@@ -107,6 +107,13 @@ class CaseProcessTest {
     assertThat(processInstance.startManually(manualStart_repetitionComplete.key)).isNotEmpty
   }
 
+  @Test
+  fun `can start a caseExecution with repetition rule manualStart anytime`() {
+    val processInstance = startProcess()
+    assertThat(processInstance.startManually(DummyCaseProcess.CaseTasks.manualStart_repetitionManualStart.key)).isNotEmpty
+    assertThat(processInstance.startManually(DummyCaseProcess.CaseTasks.manualStart_repetitionManualStart.key)).isNotEmpty
+  }
+
   private fun startProcess(): DummyCaseProcessInstance {
     val processInstance = process.start(Start())
 

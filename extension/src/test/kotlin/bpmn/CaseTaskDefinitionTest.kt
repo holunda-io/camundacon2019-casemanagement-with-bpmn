@@ -16,11 +16,11 @@ class CaseTaskDefinitionTest {
     val modelInstance = Bpmn.readModelFromStream(CaseTaskDefinitionTest::class.java.getResourceAsStream("/DummyCaseProcess.bpmn"))
 
     val caseDefinitions = modelInstance.parseCaseDefinitions()
-    println(caseDefinitions)
 
-    assertThat(caseDefinitions.tasks).hasSize(3)
+    assertThat(caseDefinitions.tasks).hasSize(4)
 
     assertThat(caseDefinitions.tasks.get("manualStart_repetitionComplete")!!.repetitionRule).isEqualTo(RepetitionRule.COMPLETE)
+    assertThat(caseDefinitions.tasks.get("manualStart_repetitionManualStart")!!.repetitionRule).isEqualTo(RepetitionRule.MANUAL_START)
     assertThat(caseDefinitions.tasks.get("runAutomatically_repetitionNone")!!.repetitionRule).isEqualTo(RepetitionRule.NONE)
   }
 

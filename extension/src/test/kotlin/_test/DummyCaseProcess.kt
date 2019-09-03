@@ -23,7 +23,8 @@ class DummyCaseProcess(
   enum class CaseTasks : CaseTaskKey {
     runAutomatically_repetitionNone,
     manualStart_repetitionNone,
-    manualStart_repetitionComplete
+    manualStart_repetitionComplete,
+    manualStart_repetitionManualStart
     ;
 
     override val key = name
