@@ -10,7 +10,6 @@ allprojects {
     group = "io.holunda.talk.camundacon"
     version = "0.0.1-SNAPSHOT"
 
-
     apply {
         from("${rootProject.projectDir}/gradle/repositories.gradle.kts")
     }
