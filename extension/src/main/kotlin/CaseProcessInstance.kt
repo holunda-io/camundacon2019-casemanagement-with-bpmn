@@ -10,7 +10,9 @@ import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionEntities
 import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionEntity
 import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionRepository
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.runtime.ProcessInstance
+import org.camunda.bpm.engine.task.Task
 import org.camunda.bpm.engine.variable.Variables
 import java.util.*
 
@@ -75,3 +77,6 @@ abstract class CaseProcessInstanceWrapper(
 
   override fun <T : Any> getVariable(key: String): T? = runtimeService.getVariable(processInstanceId, key) as T?
 }
+
+
+fun CaseProcessInstanceWrapper.findTask(key:String, taskService: TaskService) : Task? = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskDefinitionKey(key).singleResult()

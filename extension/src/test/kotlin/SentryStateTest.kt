@@ -25,6 +25,19 @@ class SentryStateTest : AbstractDummyCaseProcessTest() {
   }
 
   @Test
+  fun `caseTaskWithSentry is ENABLED after start when sentryCondition=true`() {
+    GIVEN
+      .`the sentry for task $ evaluates to $`(CaseTask.manualStart_repetitionComplete_withSentry, true)
+      .AND
+      .`the case process is started`()
+
+    THEN
+      .`all pending executions for task $ have state $`(CaseTask.manualStart_repetitionComplete_withSentry, BpmnCaseExecutionState.ENABLED)
+  }
+
+
+  // TODO move to general process test
+  @Test
   fun `a started process waits at keep alive`() {
     GIVEN
       .`the case process is started`()

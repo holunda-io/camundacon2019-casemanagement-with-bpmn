@@ -1,18 +1,15 @@
 package io.holunda.extension.casemanagement
 
-import _test.DummyCaseProcess
 import _test.DummyCaseProcess.CaseTask
 import _test.DummyCaseProcess.CaseTask.*
-import _test.DummyCaseProcess.Elements.*
-import _test.DummyCaseProcessInstance
-import _test.Start
+import _test.DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE
 import cmmn.BpmnCaseExecutionState
+import io.holunda.extension.casemanagement._test.AND
+import io.holunda.extension.casemanagement._test.GIVEN
+import io.holunda.extension.casemanagement._test.THEN
+import io.holunda.extension.casemanagement._test.WHEN
 import io.holunda.extension.casemanagement.cmmn.RepetitionRule
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.ExecutionListener
-import org.camunda.bpm.engine.task.Task
-import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests
 import org.junit.Ignore
 import org.junit.Test
 
@@ -40,40 +37,43 @@ class CaseProcessTest : AbstractDummyCaseProcessTest() {
 
   }
 
-  private fun CaseProcessInstanceWrapper.findTask(key:String) : Task? = camunda.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskDefinitionKey(key).singleResult()
-
   @Test
   fun `manually start and stop case task`() {
-    val processInstance = startProcess()
+    GIVEN
+      .`the case process is started`()
 
-    assertThat(processInstance.findTask(USERTASK_MS_REPETITION_COMPLETE.key)).isNull()
+    THEN
+      .`no user task $ exists`(USERTASK_MS_REPETITION_COMPLETE)
 
-    val started = processInstance.startWithRepetitionComplete()
+    WHEN
+      .`a caseTask $ is manually started`(manualStart_repetitionComplete)
 
-    val task = processInstance.findTask(USERTASK_MS_REPETITION_COMPLETE.key)
-    assertThat(task).isNotNull()
+    THEN
+      .`a user task $ exists`(USERTASK_MS_REPETITION_COMPLETE)
+      .AND
+      .`the last started task of $ has state $`(manualStart_repetitionComplete, BpmnCaseExecutionState.ACTIVE)
 
-    val entity = processInstance.repository.findById(started.get())!!
+    WHEN
+      .`the userTask $ is completed`(USERTASK_MS_REPETITION_COMPLETE)
 
-    assertThat(entity.executionId).isNotNull()
-    assertThat(entity.state).isEqualTo(BpmnCaseExecutionState.ACTIVE)
+    THEN
+      .`the last started task of $ has state $`(manualStart_repetitionComplete, BpmnCaseExecutionState.COMPLETED)
 
-    camunda.taskService.complete(task!!.id)
-
-    val completed = processInstance.repository.findById(started.get())!!
-    assertThat(completed.state).isEqualTo(BpmnCaseExecutionState.COMPLETED)
   }
 
   @Test
   fun `a manually started caseExecution does not pollute the global variable scope`() {
-    val processInstance = startProcess()
-    fun hasCaseExecutionVariable() = camunda.runtimeService.getVariables(processInstance.processInstanceId).keys.contains(CaseProcess.VARIABLES.caseExecutionId)
-    assertThat(hasCaseExecutionVariable()).isFalse()
+    GIVEN
+      .`the case process is started`()
 
-    processInstance.startWithRepetitionComplete()
+    THEN
+      .`the process does not have a variable $`(CaseProcess.VARIABLES.caseExecutionId)
 
-    // variable is not readable from global scope
-    assertThat(hasCaseExecutionVariable()).isFalse()
+    WHEN
+      .`a caseTask $ is manually started`(manualStart_repetitionComplete)
+
+    THEN
+      .`the process does not have a variable $`(CaseProcess.VARIABLES.caseExecutionId)
   }
 
   /**
@@ -81,69 +81,66 @@ class CaseProcessTest : AbstractDummyCaseProcessTest() {
    */
   @Test
   fun `can not start a caseExecution with repetition rule completed until the predecessor is finished`() {
-    val processInstance = startProcess()
-    assertThat(processInstance.startWithRepetitionComplete()).isNotEmpty
+    GIVEN
+      .`the case process is started`()
+      .AND
+      .`a caseTask $ is manually started`(CaseTask.manualStart_repetitionComplete)
 
-    // second start does not create a new instance
-    assertThat(processInstance.startWithRepetitionComplete()).isEmpty
+    THEN
+      .`the last started task of $ has state $`(manualStart_repetitionComplete, BpmnCaseExecutionState.ACTIVE)
 
-    // complete the task
-    BpmnAwareTests.complete(processInstance.findTask(DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE.key))
+    // this does not work due to repetition rule
+    WHEN
+      .`a caseTask $ is manually started`(CaseTask.manualStart_repetitionComplete)
 
-    // now we can start again
-    assertThat(processInstance.startManually(manualStart_repetitionComplete.key)).isNotEmpty
+    THEN
+      .`no user task $ exists`(manualStart_repetitionComplete)
+
+    WHEN
+      .`the userTask $ is completed`(USERTASK_MS_REPETITION_COMPLETE)
+      .AND
+      .`a caseTask $ is manually started`(manualStart_repetitionComplete)
+
+    THEN
+      .`the last started task of $ has state $`(manualStart_repetitionComplete, BpmnCaseExecutionState.ACTIVE)
   }
 
   @Test
   fun `can start a caseExecution with repetition rule manualStart anytime`() {
-    val processInstance = startProcess()
-    assertThat(processInstance.startWithRepetitionManualStart()).isNotEmpty
-    assertThat(processInstance.startWithRepetitionManualStart()).isNotEmpty
+    GIVEN
+      .`the case process is started`()
+
+    WHEN
+      .`a caseTask $ is manually started`(manualStart_repetitionManualStart)
+
+    THEN
+      .`the last started task of $ has state $`(manualStart_repetitionManualStart, BpmnCaseExecutionState.ACTIVE)
+
+    WHEN
+      .`a caseTask $ is manually started`(manualStart_repetitionManualStart)
+
+    THEN
+      .`the last started task of $ has state $`(manualStart_repetitionManualStart, BpmnCaseExecutionState.ACTIVE)
+
   }
 
   @Test
   fun `can not start a caseExecution again without repetition rule`() {
-    val processInstance = startProcess()
-    assertThat(processInstance.startWithRepetitionNone()).isNotEmpty
-    assertThat(processInstance.startWithRepetitionNone()).isEmpty
-  }
+    GIVEN
+      .`the case process is started`()
 
-  @Test
-  fun `execute custom expression in listener`() {
-    val processInstance = startProcess()
-    processInstance.startWithRepetitionComplete()
-  }
+    WHEN
+      .`a caseTask $ is manually started`(manualStart_repetitionNone)
 
-  class ExpressionSpikeListener : ExecutionListener {
-    override fun notify(execution: DelegateExecution) {
+    THEN
+      .`the last started task of $ has state $`(manualStart_repetitionNone, BpmnCaseExecutionState.ACTIVE)
 
-      val expression = execution.expressionManager.createExpression("\${sentry.evaluate()}")
-      val value = expression.getValue(execution, null)
-      logger.info { """
-        
-        
-        
-        
-        Hallo  ${expression.expressionText}
-        
-        $value
-        
-      """.trimIndent() }
-    }
+    WHEN
+      .`a caseTask $ is manually started`(manualStart_repetitionNone)
+
+    THEN
+      .`no new caseTask $ exists`(manualStart_repetitionNone)
 
   }
 
-  class SentryResolver {
-
-    fun evaluate() : Boolean = false
-
-  }
-
-  private fun startProcess(): DummyCaseProcessInstance {
-    val processInstance = process.start(Start())
-
-    BpmnAwareTests.assertThat(processInstance).isWaitingAt("keep_alive")
-
-    return processInstance
-  }
 }
