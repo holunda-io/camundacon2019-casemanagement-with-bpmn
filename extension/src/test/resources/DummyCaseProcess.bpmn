@@ -28,11 +28,16 @@
       <bpmn:sequenceFlow id="SequenceFlow_0gpm9ji" sourceRef="StartEvent_0blntav" targetRef="ut_manualStart_repetitionNone" />
       <bpmn:userTask id="ut_manualStart_repetitionNone" name="Sub task">
         <bpmn:incoming>SequenceFlow_0gpm9ji</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_0q8giz2</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:startEvent id="StartEvent_0blntav" isInterrupting="false">
         <bpmn:outgoing>SequenceFlow_0gpm9ji</bpmn:outgoing>
         <bpmn:signalEventDefinition signalRef="Signal_019j0lz" />
       </bpmn:startEvent>
+      <bpmn:endEvent id="EndEvent_0awjadv">
+        <bpmn:incoming>SequenceFlow_0q8giz2</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_0q8giz2" sourceRef="ut_manualStart_repetitionNone" targetRef="EndEvent_0awjadv" />
     </bpmn:subProcess>
     <bpmn:subProcess id="runAutomatically_repetitionNone" name="Default: run automatically,  no repetition" triggeredByEvent="true">
       <bpmn:extensionElements>
@@ -45,11 +50,16 @@
       <bpmn:sequenceFlow id="SequenceFlow_0u3zzlb" sourceRef="StartEvent_00l2420" targetRef="ut_should_start_automatically_and_run_only_once" />
       <bpmn:userTask id="ut_should_start_automatically_and_run_only_once" name="Run automatically ">
         <bpmn:incoming>SequenceFlow_0u3zzlb</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_0l2gsq4</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:startEvent id="StartEvent_00l2420" isInterrupting="false">
         <bpmn:outgoing>SequenceFlow_0u3zzlb</bpmn:outgoing>
         <bpmn:signalEventDefinition id="SignalEventDefinition_0dn7y7v" signalRef="Signal_0vgyx94" />
       </bpmn:startEvent>
+      <bpmn:endEvent id="EndEvent_1272zbb">
+        <bpmn:incoming>SequenceFlow_0l2gsq4</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_0l2gsq4" sourceRef="ut_should_start_automatically_and_run_only_once" targetRef="EndEvent_1272zbb" />
     </bpmn:subProcess>
     <bpmn:subProcess id="manualStart_repetitionComplete" name="manual start, repetition rule: complete" triggeredByEvent="true">
       <bpmn:extensionElements>
@@ -66,12 +76,14 @@
         <bpmn:signalEventDefinition id="SignalEventDefinition_0n8qry6" signalRef="Signal_0sr54nm" />
       </bpmn:startEvent>
       <bpmn:userTask id="ut_manualStart_repetitionComplete" name="manual start">
-        <bpmn:extensionElements>
-          <camunda:executionListener delegateExpression="${expressionSpike}" event="start" />
-        </bpmn:extensionElements>
         <bpmn:incoming>SequenceFlow_0qhmvq7</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_1jdhbup</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:sequenceFlow id="SequenceFlow_0qhmvq7" sourceRef="StartEvent_1ubv5iv" targetRef="ut_manualStart_repetitionComplete" />
+      <bpmn:endEvent id="EndEvent_1tdal9g">
+        <bpmn:incoming>SequenceFlow_1jdhbup</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_1jdhbup" sourceRef="ut_manualStart_repetitionComplete" targetRef="EndEvent_1tdal9g" />
     </bpmn:subProcess>
     <bpmn:subProcess id="manualStart_repetitionManualStart" name="manual start, repetition rule: manualStart" triggeredByEvent="true">
       <bpmn:extensionElements>
@@ -89,8 +101,13 @@
       </bpmn:startEvent>
       <bpmn:userTask id="ut_manualStart_repetitionManualStart" name="manual start">
         <bpmn:incoming>SequenceFlow_1iljmzm</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_1671akm</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:sequenceFlow id="SequenceFlow_1iljmzm" sourceRef="StartEvent_1k72qzn" targetRef="ut_manualStart_repetitionManualStart" />
+      <bpmn:endEvent id="EndEvent_00b8tab">
+        <bpmn:incoming>SequenceFlow_1671akm</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_1671akm" sourceRef="ut_manualStart_repetitionManualStart" targetRef="EndEvent_00b8tab" />
     </bpmn:subProcess>
     <bpmn:subProcess id="manualStart_repetitionComplete_withSentry" name="manual start, repetition rule: complete, with sentry" triggeredByEvent="true">
       <bpmn:extensionElements>
@@ -109,8 +126,13 @@
       </bpmn:startEvent>
       <bpmn:userTask id="ut_manualStart_repetitionComplete_withSentry" name="Case Task with Sentry">
         <bpmn:incoming>SequenceFlow_1eiuzgb</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_01n4g7p</bpmn:outgoing>
       </bpmn:userTask>
       <bpmn:sequenceFlow id="SequenceFlow_1eiuzgb" sourceRef="StartEvent_0e3qcky" targetRef="ut_manualStart_repetitionComplete_withSentry" />
+      <bpmn:endEvent id="EndEvent_16a6emr">
+        <bpmn:incoming>SequenceFlow_01n4g7p</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_01n4g7p" sourceRef="ut_manualStart_repetitionComplete_withSentry" targetRef="EndEvent_16a6emr" />
     </bpmn:subProcess>
     <bpmn:textAnnotation id="TextAnnotation_06z5wkz">
       <bpmn:text>we need a criteria that keeps the outer process active</bpmn:text>
@@ -241,6 +263,41 @@ Sentry: yes</bpmn:text>
       <bpmndi:BPMNEdge id="Association_0ro3631_di" bpmnElement="Association_0ro3631">
         <di:waypoint x="350" y="808" />
         <di:waypoint x="311" y="803" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0awjadv_di" bpmnElement="EndEvent_0awjadv">
+        <dc:Bounds x="642" y="362" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0q8giz2_di" bpmnElement="SequenceFlow_0q8giz2">
+        <di:waypoint x="580" y="380" />
+        <di:waypoint x="642" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_1272zbb_di" bpmnElement="EndEvent_1272zbb">
+        <dc:Bounds x="1022" y="362" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0l2gsq4_di" bpmnElement="SequenceFlow_0l2gsq4">
+        <di:waypoint x="960" y="380" />
+        <di:waypoint x="1022" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_00b8tab_di" bpmnElement="EndEvent_00b8tab">
+        <dc:Bounds x="1022" y="582" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1671akm_di" bpmnElement="SequenceFlow_1671akm">
+        <di:waypoint x="960" y="600" />
+        <di:waypoint x="1022" y="600" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_1tdal9g_di" bpmnElement="EndEvent_1tdal9g">
+        <dc:Bounds x="642" y="582" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1jdhbup_di" bpmnElement="SequenceFlow_1jdhbup">
+        <di:waypoint x="580" y="600" />
+        <di:waypoint x="642" y="600" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_16a6emr_di" bpmnElement="EndEvent_16a6emr">
+        <dc:Bounds x="642" y="812" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_01n4g7p_di" bpmnElement="SequenceFlow_01n4g7p">
+        <di:waypoint x="580" y="830" />
+        <di:waypoint x="642" y="830" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
