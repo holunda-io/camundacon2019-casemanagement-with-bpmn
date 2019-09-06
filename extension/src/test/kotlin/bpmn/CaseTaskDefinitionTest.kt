@@ -17,7 +17,7 @@ class CaseTaskDefinitionTest {
 
     val caseDefinitions = modelInstance.parseCaseDefinitions()
 
-    assertThat(caseDefinitions.tasks).hasSize(4)
+    assertThat(caseDefinitions.tasks).hasSize(5)
 
     assertThat(caseDefinitions.tasks.get("manualStart_repetitionComplete")!!.repetitionRule).isEqualTo(RepetitionRule.COMPLETE)
     assertThat(caseDefinitions.tasks.get("manualStart_repetitionManualStart")!!.repetitionRule).isEqualTo(RepetitionRule.MANUAL_START)

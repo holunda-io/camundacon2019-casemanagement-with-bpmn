@@ -92,6 +92,26 @@
       </bpmn:userTask>
       <bpmn:sequenceFlow id="SequenceFlow_1iljmzm" sourceRef="StartEvent_1k72qzn" targetRef="ut_manualStart_repetitionManualStart" />
     </bpmn:subProcess>
+    <bpmn:subProcess id="manualStart_repetitionComplete_withSentry" name="manual start, repetition rule: complete, with sentry" triggeredByEvent="true">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="cmmnType" value="humanTask" />
+          <camunda:property name="cmmnRepetitionRule" value="complete" />
+          <camunda:property name="cmmnManualStart" value="true" />
+          <camunda:property name="cmmnSentryOnPartExpression" value="${manualStartRepetitionCompleteWithSentryResolver.evaluate(execution)}" />
+        </camunda:properties>
+        <camunda:executionListener delegateExpression="${dummyCaseProcess.onCaseExecutionStart()}" event="start" />
+        <camunda:executionListener delegateExpression="${dummyCaseProcess.onCaseExecutionComplete()}" event="end" />
+      </bpmn:extensionElements>
+      <bpmn:startEvent id="StartEvent_0e3qcky" isInterrupting="false">
+        <bpmn:outgoing>SequenceFlow_1eiuzgb</bpmn:outgoing>
+        <bpmn:signalEventDefinition id="SignalEventDefinition_06nhom4" signalRef="Signal_1kf97ra" />
+      </bpmn:startEvent>
+      <bpmn:userTask id="ut_manualStart_repetitionComplete_withSentry" name="Case Task with Sentry">
+        <bpmn:incoming>SequenceFlow_1eiuzgb</bpmn:incoming>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="SequenceFlow_1eiuzgb" sourceRef="StartEvent_0e3qcky" targetRef="ut_manualStart_repetitionComplete_withSentry" />
+    </bpmn:subProcess>
     <bpmn:textAnnotation id="TextAnnotation_06z5wkz">
       <bpmn:text>we need a criteria that keeps the outer process active</bpmn:text>
     </bpmn:textAnnotation>
@@ -100,15 +120,23 @@
       <bpmn:text>Type: HumanTask
 ManualStart: true
 Repetition: Complete
-Sentry: true</bpmn:text>
+Sentry: none</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_1jpf87u" sourceRef="manualStart_repetitionComplete" targetRef="TextAnnotation_0okcha7" />
+    <bpmn:textAnnotation id="TextAnnotation_0wo0xef">
+      <bpmn:text>Type: HumanTask
+ManualStart: true
+Repetition: Complete
+Sentry: yes</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0ro3631" sourceRef="manualStart_repetitionComplete_withSentry" targetRef="TextAnnotation_0wo0xef" />
   </bpmn:process>
   <bpmn:message id="Message_11dtaor" name="Message_2bvnuu2" />
   <bpmn:signal id="Signal_0sr54nm" name="manualStart_repetitionComplete_${execution.processInstanceId}" />
   <bpmn:signal id="Signal_019j0lz" name="manualStart_repetitionNone_${execution.processInstanceId}" />
   <bpmn:signal id="Signal_0vgyx94" name="runAutomatically_repetitionNone_${execution.processInstanceId}" />
   <bpmn:signal id="Signal_0hdy4o0" name="manualStart_repetitionManualStart_${execution.processInstanceId}" />
+  <bpmn:signal id="Signal_1kf97ra" name="manualStart_repetitionComplete_withSentry_${execution.processInstanceId}" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="dummy_case_process">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
@@ -193,6 +221,26 @@ Sentry: true</bpmn:text>
       <bpmndi:BPMNEdge id="Association_1jpf87u_di" bpmnElement="Association_1jpf87u">
         <di:waypoint x="350" y="578" />
         <di:waypoint x="310" y="573" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SubProcess_02c5q5v_di" bpmnElement="manualStart_repetitionComplete_withSentry" isExpanded="true">
+        <dc:Bounds x="350" y="730" width="350" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0e3qcky_di" bpmnElement="StartEvent_0e3qcky">
+        <dc:Bounds x="390" y="812" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1m9wee4_di" bpmnElement="ut_manualStart_repetitionComplete_withSentry">
+        <dc:Bounds x="480" y="790" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1eiuzgb_di" bpmnElement="SequenceFlow_1eiuzgb">
+        <di:waypoint x="426" y="830" />
+        <di:waypoint x="480" y="830" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0wo0xef_di" bpmnElement="TextAnnotation_0wo0xef">
+        <dc:Bounds x="170" y="760" width="141" height="68" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0ro3631_di" bpmnElement="Association_0ro3631">
+        <di:waypoint x="350" y="808" />
+        <di:waypoint x="311" y="803" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

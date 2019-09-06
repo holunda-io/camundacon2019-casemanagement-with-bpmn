@@ -7,6 +7,7 @@ import io.holunda.extension.casemanagement.CaseProcess
 import io.holunda.extension.casemanagement.bpmn.parseCaseDefinitions
 import io.holunda.extension.casemanagement.persistence.BpmCaseExecutionRepositoryFactory
 import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionEntity
+import io.holunda.extension.casemanagement.sentry.evaluateSentryCondition
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
 
@@ -22,18 +23,35 @@ class CaseProcessStartListener(
   private val repositoryFactory = BpmCaseExecutionRepositoryFactory(objectMapper)
 
   override fun notify(execution: DelegateExecution) {
-    val caseDefinitions = execution.bpmnModelInstance.parseCaseDefinitions()
-    execution.setVariable(CaseProcess.VARIABLES.caseProcessDefinition, objectMapper.writeValueAsString(caseDefinitions))
+    val caseProcessDefinition = execution.bpmnModelInstance.parseCaseDefinitions().apply {
+      execution.setVariable(
+        CaseProcess.VARIABLES.caseProcessDefinition,
+        objectMapper.writeValueAsString(this)
+      )
+    }
+
+    val initialSentryStates = caseProcessDefinition.tasks.values.map {
+      it to evaluateSentryCondition(execution, it)
+    }.toMap()
 
     val repository = repositoryFactory.create(execution)
 
-    for ((key, definition) in caseDefinitions.tasks) {
-      if (!definition.hasSentry && definition.manualStart) {
-        repository.save(BpmnCaseExecutionEntity(caseTaskKey = key, state = BpmnCaseExecutionState.ENABLED))
-      } else {
-        repository.save(BpmnCaseExecutionEntity(key))
+    for (caseTaskDefinition in caseProcessDefinition.values) {
+      val sentryCondition = evaluateSentryCondition(execution, caseTaskDefinition)
+      val caseExecutionEntity = BpmnCaseExecutionEntity(caseTaskDefinition.key)
+
+      val initialState: BpmnCaseExecutionState = when {
+        caseTaskDefinition.manualStart && sentryCondition -> BpmnCaseExecutionState.ENABLED
+        caseTaskDefinition.manualStart && !sentryCondition -> BpmnCaseExecutionState.DISABLED
+        else -> BpmnCaseExecutionState.NEW
+        // TODO: automatic start
+        //caseTaskDefinition.automaticStart && sentryCondition -> BpmnCaseExecutionState.ACTIVE
       }
+
+      repository.save(BpmnCaseExecutionEntity(caseTaskKey = caseTaskDefinition.key, state = initialState))
     }
+
     repository.commit()
   }
+
 }

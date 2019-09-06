@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("jvm")
+  id("org.jetbrains.kotlin.plugin.allopen") version Versions.kotlin
 }
 
 dependencies {
@@ -37,10 +38,13 @@ dependencies {
   testImplementation("org.assertj:assertj-core:3.13.2")
   testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.10.0")
   testImplementation("com.h2database:h2:1.4.197")
-
-
+  testImplementation("com.tngtech.jgiven:jgiven-junit:0.18.1")
 }
 
+
+allOpen {
+  annotation("io.holunda.extension.casemanagement._test.JGivenKotlinStage")
+}
 
 tasks {
   withType<KotlinCompile> {

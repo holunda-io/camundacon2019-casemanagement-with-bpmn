@@ -2,9 +2,12 @@ package io.holunda.extension.casemanagement.bpmn
 
 import io.holunda.extension.casemanagement.cmmn.CmmnType
 import io.holunda.extension.casemanagement.cmmn.RepetitionRule
+import io.holunda.extension.casemanagement.expressionManager
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.model.bpmn.BpmnModelInstance
 import org.camunda.bpm.model.bpmn.instance.SubProcess
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
+import java.security.Key
 
 /**
  * Holds all information available by parsing the extension elements of an embedded subprocess in the
@@ -23,13 +26,18 @@ data class CaseTaskDefinition(
     val sentryOnPartExpression: String? = null
 ) {
   val hasSentry = sentryOnPartExpression != null
+
+  val automaticStart = !manualStart
 }
 
 /**
  * This is the structure that is stored as json process variable.
  */
-data class CaseProcessDefinition(val tasks: Map<String, CaseTaskDefinition>)
+data class CaseProcessDefinition(val tasks: Map<String, CaseTaskDefinition>) {
+  operator fun get(caseTaskKey: String) = tasks.get(caseTaskKey)?:throw IllegalArgumentException("no definition found for key=$caseTaskKey")
 
+  val values = tasks.values.toList()
+}
 
 private fun CamundaProperties.asMap() = this.camundaProperties.map { it.camundaName to it.camundaValue }.toMap()
 
@@ -39,7 +47,8 @@ private fun CamundaProperties.asMap() = this.camundaProperties.map { it.camundaN
 private data class CamundaCmmnProperties(
     val type: CmmnType?,
     val repetitionRule: RepetitionRule?,
-    val manualStart: Boolean?
+    val manualStart: Boolean?,
+    val sentryOnPartExpression: String?
 ) {
   companion object {
 
@@ -54,7 +63,8 @@ private data class CamundaCmmnProperties(
     operator fun invoke(properties: Map<String, String>): CamundaCmmnProperties = CamundaCmmnProperties(
         type = CmmnType.byValue(properties),
         repetitionRule = RepetitionRule.byValue(properties),
-        manualStart = properties["cmmnManualStart"]?.toBoolean()
+        manualStart = properties["cmmnManualStart"]?.toBoolean(),
+        sentryOnPartExpression = properties["cmmnSentryOnPartExpression"]
     )
   }
 }
@@ -77,6 +87,7 @@ internal fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
           type = properties.type,
           repetitionRule = properties.repetitionRule ?: RepetitionRule.NONE,
           manualStart = properties.manualStart?:false,
+          sentryOnPartExpression = properties.sentryOnPartExpression,
           required = false
       )
     }
