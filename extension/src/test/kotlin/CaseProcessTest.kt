@@ -8,34 +8,9 @@ import io.holunda.extension.casemanagement._test.AND
 import io.holunda.extension.casemanagement._test.GIVEN
 import io.holunda.extension.casemanagement._test.THEN
 import io.holunda.extension.casemanagement._test.WHEN
-import io.holunda.extension.casemanagement.cmmn.RepetitionRule
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 
 class CaseProcessTest : AbstractDummyCaseProcessTest() {
-
-  @Test
-  @Ignore("does not work due to sentry condition expression, refactor test to use jgiven stages")
-  fun `start process`() {
-    val processInstance = startProcess()
-
-    val def = processInstance.caseProcessDefinition
-    assertThat(def.tasks[runAutomatically_repetitionNone.key]!!.repetitionRule).isEqualTo(RepetitionRule.NONE)
-
-    assertThat(processInstance.bpmnCaseExecutionEntities.executions).isNotEmpty()
-
-    val enabled = processInstance.findExecutions(state = BpmnCaseExecutionState.ENABLED)
-      .map { it.caseTaskKey }
-      .map { CaseTask.valueOf(it) }
-
-    assertThat(enabled).containsExactlyInAnyOrder(
-      CaseTask.manualStart_repetitionManualStart,
-      manualStart_repetitionComplete,
-      manualStart_repetitionNone
-    )
-
-  }
 
   @Test
   fun `manually start and stop case task`() {
