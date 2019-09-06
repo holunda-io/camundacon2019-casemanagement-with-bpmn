@@ -39,6 +39,7 @@ dependencies {
   testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.10.0")
   testImplementation("com.h2database:h2:1.4.197")
   testImplementation("com.tngtech.jgiven:jgiven-junit:0.18.1")
+  //testImplementation("io.toolisticon.addons.jgiven:jgiven-kotlin:0.5.2-SNAPSHOT")
 }
 
 

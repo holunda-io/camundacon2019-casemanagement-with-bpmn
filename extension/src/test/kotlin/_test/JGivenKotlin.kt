@@ -43,7 +43,12 @@ val <X : Stage<X>> Stage<X>.WITH: X get() = with()
 val <X : Stage<X>> Stage<X>.BUT: X get() = but()
 
 
+/**
+ * Null safe access to `self()`. Prevents platform type warning
+ */
 val <X : Stage<X>> Stage<X>.self: X get() = self()!!
+
+inline fun  <X : Stage<X>> Stage<X>.step(block: X.() -> Unit) = self.apply(block)
 
 
 /**
