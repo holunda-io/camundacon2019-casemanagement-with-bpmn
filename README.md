@@ -2,9 +2,12 @@
 
 Modelling and Managing a Case with BPMN/DMN
 
+## Features
 
 
-## State Chain
+
+
+### State Chain
 
 - just created -> NEW
 - No Sentry and no manualStart -> ACTIVE
@@ -13,3 +16,15 @@ Modelling and Managing a Case with BPMN/DMN
 - Sentry(false) and manualStart -> DISABLED
 - ENABLED on manualStart -> ACTIVE
 - ACTIVE on complete -> COMPLETED
+
+## Roadmap
+
+soon:
+
+* automatic start of case tasks
+
+near future:
+
+* modeler template: to set extension properties with key/value support
+* modeler plugin: display overlay icons for mandatory, manualStart and repetitionRule
+* cockpit plugin: display cast task states for running and waiting instances
