@@ -8,11 +8,11 @@ enum class BpmnCaseExecutionState(val state: CaseExecutionState) {
   ENABLED(CaseExecutionState.ENABLED),
   DISABLED(CaseExecutionState.DISABLED),
   ACTIVE(CaseExecutionState.ACTIVE),
-  SUSPENDED(CaseExecutionState.SUSPENDED),
+  //SUSPENDED(CaseExecutionState.SUSPENDED),
   TERMINATED(CaseExecutionState.TERMINATED),
   COMPLETED(CaseExecutionState.COMPLETED),
-  FAILED(CaseExecutionState.FAILED),
-  CLOSED(CaseExecutionState.CLOSED)
+  //FAILED(CaseExecutionState.FAILED),
+  //CLOSED(CaseExecutionState.CLOSED)
   ;
 
   val statusCode: Int by lazy {
