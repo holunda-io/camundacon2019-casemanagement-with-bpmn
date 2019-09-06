@@ -23,15 +23,22 @@ dependencies {
   implementation(kotlin("stdlib-jdk8"))
 
   //
+  // LOGGING
+  //
+  testImplementation("ch.qos.logback:logback-classic:1.2.3")
+  testImplementation("io.github.microutils:kotlin-logging:1.7.6")
+
+  //
   // TEST
   //
+  testImplementation("org.camunda.bpm.assert:camunda-bpm-assert:4.0.0")
   testImplementation("org.jetbrains.kotlin:kotlin-test")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-  testImplementation("org.camunda.bpm.assert:camunda-bpm-assert:4.0.0")
   testImplementation("org.assertj:assertj-core:3.13.2")
   testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.10.0")
   testImplementation("com.h2database:h2:1.4.197")
-  testImplementation("org.slf4j:slf4j-simple:1.7.28")
+
+
 }
 
 
