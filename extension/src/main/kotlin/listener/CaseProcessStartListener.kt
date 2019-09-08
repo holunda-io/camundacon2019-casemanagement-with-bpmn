@@ -30,15 +30,10 @@ class CaseProcessStartListener(
       )
     }
 
-    val initialSentryStates = caseProcessDefinition.tasks.values.map {
-      it to evaluateSentryCondition(execution, it)
-    }.toMap()
-
     val repository = repositoryFactory.create(execution)
 
     for (caseTaskDefinition in caseProcessDefinition.values) {
       val sentryCondition = evaluateSentryCondition(execution, caseTaskDefinition)
-      val caseExecutionEntity = BpmnCaseExecutionEntity(caseTaskDefinition.key)
 
       val initialState: BpmnCaseExecutionState = when {
         caseTaskDefinition.manualStart && sentryCondition -> BpmnCaseExecutionState.ENABLED

@@ -4,7 +4,15 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
 import kotlin.reflect.KClass
 
-// marker class for root package
+object CaseManagementBpmnExtension {
+
+  object ExtensionPropertyKeys {
+    const val cmmnType = "cmmnType"
+    const val cmmnRepetitionRule = "cmmnRepetitionRule"
+  }
+
+
+}
 
 interface EnumWithValue {
   val value : String

@@ -65,6 +65,6 @@ class DummyCaseProcessInstance(processInstance: ProcessInstance, runtimeService:
  * Helper to set the result of sentry evaluation for task with sentry
  */
 class ManualStartRepetitionCompleteWithSentryResolver(var state: Boolean = false) {
-  @Suppress("UNUSED") // only by expression in bpmn model
+  @Suppress(names = ["UNUSED", "UNUSED_PARAMETER"]) // only by expression in bpmn model
   fun evaluate(execution: DelegateExecution) = state
 }

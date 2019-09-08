@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.holunda.extension.casemanagement.bpmn.CaseProcessDefinition
-import io.holunda.extension.casemanagement.persistence.BpmCaseExecutionRepositoryFactory
-import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionEntities
-import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionEntity
-import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionRepository
+import io.holunda.extension.casemanagement.persistence.*
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.runtime.ProcessInstance
@@ -51,10 +48,7 @@ abstract class CaseProcessInstanceWrapper(
     get() = BpmnCaseExecutionEntities(repository.executions)
 
 
-  override fun findExecutions(state: BpmnCaseExecutionState?, key: String?): List<BpmnCaseExecutionEntity> {
-    val list = if (key != null) repository.findByCaseTaskKey(key) else repository.findAll()
-    return if (state != null) list.filter { it.state == state } else list
-  }
+  override fun findExecutions(state: BpmnCaseExecutionState?, key: String?): List<BpmnCaseExecutionEntity> = repository.query(BpmnCaseExecutionQuery(key, state))
 
   override fun startManually(caseTaskKey: String): Optional<String> {
     val enabled = findExecutions(state = BpmnCaseExecutionState.ENABLED, key = caseTaskKey)
