@@ -7,9 +7,11 @@ import io.holunda.extension.casemanagement.command.StartProcessCommand
 import io.holunda.extension.casemanagement.listener.CaseExecutionOnCompleteListener
 import io.holunda.extension.casemanagement.listener.CaseExecutionOnStartListener
 import io.holunda.extension.casemanagement.listener.CaseProcessStartListener
+import io.holunda.extension.casemanagement.listener.ReevaluateSentriesDelegate
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.ExecutionListener
+import org.camunda.bpm.engine.delegate.JavaDelegate
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import java.lang.IllegalStateException
 
@@ -20,6 +22,7 @@ abstract class CaseProcess<C : StartProcessCommand, I : CaseProcessInstanceWrapp
 ) {
   companion object {
     const val TASK_LIFECYCLE_KEY = "taskLifecycle"
+    const val SUBPROCESS_SENTRY_REEVALUATION = "subprocess_sentry_reevaluation"
   }
 
   object VARIABLES {
@@ -41,6 +44,7 @@ abstract class CaseProcess<C : StartProcessCommand, I : CaseProcessInstanceWrapp
 
   fun onCaseExecutionStart() : ExecutionListener = CaseExecutionOnStartListener(om)
   fun onCaseExecutionComplete() : ExecutionListener = CaseExecutionOnCompleteListener(om)
+  fun onReevaluateSentries() : JavaDelegate =  ReevaluateSentriesDelegate(om)
 
   fun findByBusinessKey(businessKey:String) : I? {
     val proc = runtimeService.createProcessInstanceQuery()

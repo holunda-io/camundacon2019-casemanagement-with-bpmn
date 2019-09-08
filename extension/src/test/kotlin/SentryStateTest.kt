@@ -58,6 +58,26 @@ class SentryStateTest : AbstractDummyCaseProcessTest() {
       .`all pending executions for task $ have state $`(manualStart_repetitionComplete_withSentry, BpmnCaseExecutionState.DISABLED)
   }
 
+  @Test
+  fun `a disabled task is enabled when the sentry changes`() {
+    GIVEN
+      .`the sentry for task $ evaluates to $`(manualStart_repetitionComplete_withSentry, false)
+      .AND
+      .`the case process is started`()
+
+    THEN
+      .`all pending executions for task $ have state $`(manualStart_repetitionComplete_withSentry, BpmnCaseExecutionState.DISABLED)
+
+    WHEN
+      .`the sentry for task $ evaluates to $`(manualStart_repetitionComplete_withSentry, true)
+      .AND
+      .`sentry re-evaluation is triggered`()
+
+    THEN
+      .`all pending executions for task $ have state $`(manualStart_repetitionComplete_withSentry, BpmnCaseExecutionState.ENABLED)
+
+  }
+
   // TODO move to general process test
   @Test
   fun `a started process waits at keep alive`() {

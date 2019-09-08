@@ -27,23 +27,24 @@ interface CaseProcessInstance {
   fun findExecutions(state: BpmnCaseExecutionState? = null, key: String? = null): List<BpmnCaseExecutionEntity>
 
   fun startManually(caseTaskKey: String): Optional<String>
-  fun startManually(caseTaskKey:CaseTaskKey) = startManually(caseTaskKey.key)
+  fun startManually(caseTaskKey: CaseTaskKey) = startManually(caseTaskKey.key)
+  fun triggerSentryReevaluation()
 
-  fun <T:Any> getVariable(key: String) : T?
+  fun <T : Any> getVariable(key: String): T?
 }
 
 abstract class CaseProcessInstanceWrapper(
-    private val processInstance: ProcessInstance,
-    private val runtimeService: RuntimeService,
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+  private val processInstance: ProcessInstance,
+  private val runtimeService: RuntimeService,
+  private val objectMapper: ObjectMapper = jacksonObjectMapper()
 ) : ProcessInstance by processInstance, CaseProcessInstance {
 
   override val repository get() = BpmCaseExecutionRepositoryFactory(objectMapper).create(runtimeService, processInstanceId)
 
   override val caseProcessDefinition
     get() = objectMapper.readValue<CaseProcessDefinition>(runtimeService.getVariable(
-        processInstanceId,
-        CaseProcess.VARIABLES.caseProcessDefinition) as String
+      processInstanceId,
+      CaseProcess.VARIABLES.caseProcessDefinition) as String
     )
 
   override val bpmnCaseExecutionEntities
@@ -63,20 +64,26 @@ abstract class CaseProcessInstanceWrapper(
 
     val execution = enabled.first()
     val variables = Variables.putValueTyped(
-            CaseProcess.VARIABLES.caseExecutionId,
-            Variables.stringValue(execution.id, true)
+      CaseProcess.VARIABLES.caseExecutionId,
+      Variables.stringValue(execution.id, true)
     )
 
     runtimeService.createSignalEvent("${caseTaskKey}_$processInstanceId")
-        .withoutTenantId()
-        .setVariables(variables)
-        .send()
+      .withoutTenantId()
+      .setVariables(variables)
+      .send()
 
     return Optional.of(execution.id!!)
   }
 
+  override fun triggerSentryReevaluation() = runtimeService
+    .createSignalEvent("${CaseProcess.SUBPROCESS_SENTRY_REEVALUATION}_$processInstanceId")
+    .withoutTenantId()
+    .send()
+
+  @Suppress("UNCHECKED_CAST")
   override fun <T : Any> getVariable(key: String): T? = runtimeService.getVariable(processInstanceId, key) as T?
 }
 
 
-fun CaseProcessInstanceWrapper.findTask(key:String, taskService: TaskService) : Task? = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskDefinitionKey(key).singleResult()
+fun CaseProcessInstanceWrapper.findTask(key: String, taskService: TaskService): Task? = taskService.createTaskQuery().processInstanceBusinessKey(businessKey).taskDefinitionKey(key).singleResult()

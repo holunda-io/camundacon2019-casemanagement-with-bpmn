@@ -2,12 +2,10 @@ package io.holunda.extension.casemanagement.bpmn
 
 import io.holunda.extension.casemanagement.cmmn.CmmnType
 import io.holunda.extension.casemanagement.cmmn.RepetitionRule
-import io.holunda.extension.casemanagement.expressionManager
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.model.bpmn.BpmnModelInstance
+import org.camunda.bpm.model.bpmn.instance.ExtensionElements
 import org.camunda.bpm.model.bpmn.instance.SubProcess
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
-import java.security.Key
 
 /**
  * Holds all information available by parsing the extension elements of an embedded subprocess in the
@@ -17,13 +15,13 @@ import java.security.Key
  * concrete BpmnCaseExecutions that are started during the case (process) lifecycle.
  */
 data class CaseTaskDefinition(
-    val key: String,
-    val name: String,
-    val type: CmmnType,
-    val repetitionRule: RepetitionRule,
-    val manualStart: Boolean,
-    val required: Boolean,
-    val sentryOnPartExpression: String? = null
+  val key: String,
+  val name: String,
+  val type: CmmnType,
+  val repetitionRule: RepetitionRule,
+  val manualStart: Boolean,
+  val required: Boolean,
+  val sentryOnPartExpression: String? = null
 ) {
   val hasSentry = sentryOnPartExpression != null
 
@@ -34,7 +32,7 @@ data class CaseTaskDefinition(
  * This is the structure that is stored as json process variable.
  */
 data class CaseProcessDefinition(val tasks: Map<String, CaseTaskDefinition>) {
-  operator fun get(caseTaskKey: String) = tasks.get(caseTaskKey)?:throw IllegalArgumentException("no definition found for key=$caseTaskKey")
+  operator fun get(caseTaskKey: String) = tasks.get(caseTaskKey) ?: throw IllegalArgumentException("no definition found for key=$caseTaskKey")
 
   val values = tasks.values.toList()
 }
@@ -45,26 +43,30 @@ private fun CamundaProperties.asMap() = this.camundaProperties.map { it.camundaN
  * Helper to parse camunda extension properties
  */
 private data class CamundaCmmnProperties(
-    val type: CmmnType?,
-    val repetitionRule: RepetitionRule?,
-    val manualStart: Boolean?,
-    val sentryOnPartExpression: String?
+  val type: CmmnType? = null,
+  val repetitionRule: RepetitionRule? = null,
+  val manualStart: Boolean? = null,
+  val sentryOnPartExpression: String? = null
 ) {
   companion object {
+    operator fun invoke(element: SubProcess): CamundaCmmnProperties {
+      val elements: ExtensionElements? = element.extensionElements
 
-    operator fun invoke(element: SubProcess): CamundaCmmnProperties = invoke(
-        element.extensionElements
-            .elementsQuery
-            .filterByType(CamundaProperties::class.java)
-            .singleResult()
-    )
+      return if (elements != null)
+        invoke(element.extensionElements
+          .elementsQuery
+          .filterByType(CamundaProperties::class.java)
+          .singleResult())
+      // if no extensions are set, this can not be a relevant case task
+      else CamundaCmmnProperties()
+    }
 
     operator fun invoke(properties: CamundaProperties): CamundaCmmnProperties = invoke(properties.asMap())
     operator fun invoke(properties: Map<String, String>): CamundaCmmnProperties = CamundaCmmnProperties(
-        type = CmmnType.byValue(properties),
-        repetitionRule = RepetitionRule.byValue(properties),
-        manualStart = properties["cmmnManualStart"]?.toBoolean(),
-        sentryOnPartExpression = properties["cmmnSentryOnPartExpression"]
+      type = CmmnType.byValue(properties),
+      repetitionRule = RepetitionRule.byValue(properties),
+      manualStart = properties["cmmnManualStart"]?.toBoolean(),
+      sentryOnPartExpression = properties["cmmnSentryOnPartExpression"]
     )
   }
 }
@@ -82,13 +84,13 @@ internal fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
 
     if (properties.type != null) {
       elements[subProcess.id] = CaseTaskDefinition(
-          key = subProcess.id,
-          name = subProcess.name,
-          type = properties.type,
-          repetitionRule = properties.repetitionRule ?: RepetitionRule.NONE,
-          manualStart = properties.manualStart?:false,
-          sentryOnPartExpression = properties.sentryOnPartExpression,
-          required = false
+        key = subProcess.id,
+        name = subProcess.name,
+        type = properties.type,
+        repetitionRule = properties.repetitionRule ?: RepetitionRule.NONE,
+        manualStart = properties.manualStart ?: false,
+        sentryOnPartExpression = properties.sentryOnPartExpression,
+        required = false
       )
     }
   }
