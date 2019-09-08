@@ -23,6 +23,10 @@ class ReevaluateSentriesDelegate(private val om: ObjectMapper) : JavaDelegate {
           query(BpmnCaseExecutionQuery(caseTaskKey = caseTaskDefinition.key, state = BpmnCaseExecutionState.DISABLED)).forEach {
             save(it.copy(state = BpmnCaseExecutionState.ENABLED))
           }
+        } else {
+          query(BpmnCaseExecutionQuery(caseTaskKey = caseTaskDefinition.key, state = BpmnCaseExecutionState.ENABLED)).forEach {
+            save(it.copy(state = BpmnCaseExecutionState.DISABLED))
+          }
         }
         commit()
       }

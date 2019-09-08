@@ -75,7 +75,25 @@ class SentryStateTest : AbstractDummyCaseProcessTest() {
 
     THEN
       .`all pending executions for task $ have state $`(manualStart_repetitionComplete_withSentry, BpmnCaseExecutionState.ENABLED)
+  }
 
+  @Test
+  fun `an enabled task is disabled when the sentry changes`() {
+    GIVEN
+      .`the sentry for task $ evaluates to $`(manualStart_repetitionComplete_withSentry, true)
+      .AND
+      .`the case process is started`()
+
+    THEN
+      .`all pending executions for task $ have state $`(manualStart_repetitionComplete_withSentry, BpmnCaseExecutionState.ENABLED)
+
+    WHEN
+      .`the sentry for task $ evaluates to $`(manualStart_repetitionComplete_withSentry, false)
+      .AND
+      .`sentry re-evaluation is triggered`()
+
+    THEN
+      .`all pending executions for task $ have state $`(manualStart_repetitionComplete_withSentry, BpmnCaseExecutionState.DISABLED)
   }
 
   // TODO move to general process test
