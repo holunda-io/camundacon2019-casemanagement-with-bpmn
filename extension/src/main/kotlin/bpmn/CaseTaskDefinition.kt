@@ -31,10 +31,8 @@ data class CaseTaskDefinition(
 /**
  * This is the structure that is stored as json process variable.
  */
-data class CaseProcessDefinition(val tasks: Map<String, CaseTaskDefinition>) {
-  operator fun get(caseTaskKey: String) = tasks.get(caseTaskKey) ?: throw IllegalArgumentException("no definition found for key=$caseTaskKey")
-
-  val values = tasks.values.toList()
+data class CaseProcessDefinition(val caseTaskDefinitions: Set<CaseTaskDefinition>) : Iterable<CaseTaskDefinition> by caseTaskDefinitions {
+  operator fun get(caseTaskKey: String) = caseTaskDefinitions.find { it.key == caseTaskKey } ?: throw IllegalArgumentException("no definition found for key=$caseTaskKey")
 }
 
 private fun CamundaProperties.asMap() = this.camundaProperties.map { it.camundaName to it.camundaValue }.toMap()
@@ -77,13 +75,13 @@ private data class CamundaCmmnProperties(
 internal fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
 
   val subProcesses = this.getModelElementsByType(SubProcess::class.java)
-  val elements = mutableMapOf<String, CaseTaskDefinition>()
+  val elements = mutableSetOf<CaseTaskDefinition>()
 
   for (subProcess in subProcesses) {
     val properties = CamundaCmmnProperties(subProcess)
 
     if (properties.type != null) {
-      elements[subProcess.id] = CaseTaskDefinition(
+      elements += CaseTaskDefinition(
         key = subProcess.id,
         name = subProcess.name,
         type = properties.type,
@@ -95,6 +93,6 @@ internal fun BpmnModelInstance.parseCaseDefinitions(): CaseProcessDefinition {
     }
   }
 
-  return CaseProcessDefinition(elements.toMap())
+  return CaseProcessDefinition(elements)
 }
 

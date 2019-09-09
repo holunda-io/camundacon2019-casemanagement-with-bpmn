@@ -24,7 +24,6 @@ class CaseTaskDefinitionReadOnlyRepositoryFactory(private val om: ObjectMapper =
   fun create(execution: DelegateExecution) = object : CaseTaskDefinitionReadOnlyRepository {
     override fun load(): CaseProcessDefinition = om.readValue(execution.getVariable(CaseProcess.VARIABLES.caseProcessDefinition) as String)
 
-    override fun findByKey(caseTaskKey: String): CaseTaskDefinition = load().tasks[caseTaskKey]
-      ?: throw IllegalArgumentException("no definition found for key: $caseTaskKey")
+    override fun findByKey(caseTaskKey: String): CaseTaskDefinition = load()[caseTaskKey]
   }
 }

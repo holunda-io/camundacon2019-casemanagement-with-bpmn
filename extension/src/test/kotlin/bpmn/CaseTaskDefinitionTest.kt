@@ -17,11 +17,11 @@ class CaseTaskDefinitionTest {
 
     val caseDefinitions = modelInstance.parseCaseDefinitions()
 
-    assertThat(caseDefinitions.tasks).hasSize(5)
+    assertThat(caseDefinitions.caseTaskDefinitions).hasSize(5)
 
-    assertThat(caseDefinitions.tasks.get("manualStart_repetitionComplete")!!.repetitionRule).isEqualTo(RepetitionRule.COMPLETE)
-    assertThat(caseDefinitions.tasks.get("manualStart_repetitionManualStart")!!.repetitionRule).isEqualTo(RepetitionRule.MANUAL_START)
-    assertThat(caseDefinitions.tasks.get("runAutomatically_repetitionNone")!!.repetitionRule).isEqualTo(RepetitionRule.NONE)
+    assertThat(caseDefinitions.get("manualStart_repetitionComplete").repetitionRule).isEqualTo(RepetitionRule.COMPLETE)
+    assertThat(caseDefinitions.get("manualStart_repetitionManualStart").repetitionRule).isEqualTo(RepetitionRule.MANUAL_START)
+    assertThat(caseDefinitions.get("runAutomatically_repetitionNone").repetitionRule).isEqualTo(RepetitionRule.NONE)
   }
 
 
@@ -30,11 +30,9 @@ class CaseTaskDefinitionTest {
     val objectMapper = jacksonObjectMapper()
     val task = CaseTaskDefinition(key = "1", name = "task", type = CmmnType.HUMAN_TASK, repetitionRule = RepetitionRule.COMPLETE, manualStart = false, required = false)
 
-    val def = CaseProcessDefinition(mapOf("1" to task))
+    val def = CaseProcessDefinition(setOf(task))
 
     val json = objectMapper.writeValueAsString(def)
-
-    println("---- $json")
 
     assertThat(objectMapper.readValue<CaseProcessDefinition>(json)).isEqualTo(def)
   }

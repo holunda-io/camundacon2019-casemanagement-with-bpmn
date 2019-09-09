@@ -32,7 +32,7 @@ class CaseProcessStartListener(
 
     val repository = repositoryFactory.create(execution)
 
-    for (caseTaskDefinition in caseProcessDefinition.values) {
+    for (caseTaskDefinition in caseProcessDefinition) {
       val sentryCondition = evaluateSentryCondition(execution, caseTaskDefinition)
 
       val initialState: BpmnCaseExecutionState = when {

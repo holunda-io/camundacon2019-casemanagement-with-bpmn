@@ -15,7 +15,7 @@ class ReevaluateSentriesDelegate(private val om: ObjectMapper) : JavaDelegate {
   private val DelegateExecution.executionRepository get() = BpmCaseExecutionRepositoryFactory(om).create(this.processInstance)
 
   override fun execute(execution: DelegateExecution) {
-    for (caseTaskDefinition in execution.caseTaskDefinitionRepository.load().values) {
+    for (caseTaskDefinition in execution.caseTaskDefinitionRepository.load()) {
       val shouldBeEnabled = evaluateSentryCondition(execution, caseTaskDefinition)
 
       with(execution.executionRepository) {
