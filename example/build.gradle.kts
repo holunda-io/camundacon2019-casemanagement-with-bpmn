@@ -15,7 +15,7 @@ dependencies {
 
   implementation(project(":extension"))
 
-  implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+  implementation ("io.toolisticon.springboot:springboot-swagger-starter:${Versions.springBootSwagger}")
 
   //
   // CAMUNDA

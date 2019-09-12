@@ -2,6 +2,10 @@
 
 Modelling and Managing a Case with BPMN/DMN
 
+# Demo Time
+
+* [Swagger-Ui](http://localhost:8080/swagger-ui.html)
+
 ## Features
 
 

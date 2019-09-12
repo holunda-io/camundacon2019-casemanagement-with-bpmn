@@ -8,7 +8,7 @@ import java.util.*
  * In real life, this would be solved via ID as variable and dynamic loading of some persisted life data.
  */
 data class DeptRecoveryProcessData(
-  val uuid : String = UUID.randomUUID().toString(),
+  val businessKey : String,
   val validAddress : Boolean = false,
   val validPhone : Boolean = false,
   val numberOfCallsThisDay : Int = 0,

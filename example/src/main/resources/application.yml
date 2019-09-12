@@ -11,3 +11,19 @@ camunda:
       create: "All"
     admin-user:
       id: "admin"
+
+swagger:
+  enabled: true
+  redirect: true
+  apiInfo:
+    title: Dept Recovery Procee
+    description: Demo for CamundaCon2019
+    version: 1.0
+    termsOfService: use on your own risk
+    lisense: APACHE-2.0
+    licenseUrl: LICENSE.txt
+    contact:
+      name: Jan Galinski
+      email: jan.galinski@holisticon.de
+      url: https://github.com/jangalinski
+
