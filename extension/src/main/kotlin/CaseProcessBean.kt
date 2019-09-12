@@ -25,8 +25,7 @@ interface CaseProcess<C : StartProcessCommand, I : CaseProcessInstanceWrapper> {
 
 abstract class CaseProcessBean<C : StartProcessCommand, I : CaseProcessInstanceWrapper>(
   val runtimeService: RuntimeService,
-  val repositoryService: RepositoryService,
-  val om: ObjectMapper = jacksonObjectMapper()
+  val repositoryService: RepositoryService
 ) : CaseProcess<C, I> {
   companion object {
     const val SUBPROCESS_SENTRY_REEVALUATION = "subprocess_sentry_reevaluation"
@@ -48,8 +47,8 @@ abstract class CaseProcessBean<C : StartProcessCommand, I : CaseProcessInstanceW
 
   fun onProcessStart(): ExecutionListener = CaseProcessStartListener()
 
-  fun onCaseExecutionStart(): ExecutionListener = CaseExecutionOnStartListener(om)
-  fun onCaseExecutionComplete(): ExecutionListener = CaseExecutionOnCompleteListener(om)
+  fun onCaseExecutionStart(): ExecutionListener = CaseExecutionOnStartListener()
+  fun onCaseExecutionComplete(): ExecutionListener = CaseExecutionOnCompleteListener()
   fun onReevaluateSentries(): JavaDelegate = ReevaluateSentriesDelegate()
 
   override fun findByBusinessKey(businessKey: String): Optional<I> {

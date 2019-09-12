@@ -32,17 +32,16 @@ interface CaseProcessInstance {
 
 abstract class CaseProcessInstanceWrapper(
    val processInstance: ProcessInstance,
-   val runtimeService: RuntimeService,
-   val objectMapper: ObjectMapper = jacksonObjectMapper()
+   val runtimeService: RuntimeService
 ) : ProcessInstance by processInstance, CaseProcessInstance {
 
   override val repository get() = BpmCaseExecutionRepositoryFactory().create(runtimeService, processInstanceId)
 
   override val caseProcessDefinition
-    get() = objectMapper.readValue<CaseProcessDefinition>(runtimeService.getVariable(
+    get() = runtimeService.getVariable(
       processInstanceId,
-      CaseProcessBean.VARIABLES.caseProcessDefinition) as String
-    )
+      CaseProcessBean.VARIABLES.caseProcessDefinition) as CaseProcessDefinition
+
 
   override val bpmnCaseExecutionEntities
     get() = BpmnCaseExecutionEntities(repository.executions)

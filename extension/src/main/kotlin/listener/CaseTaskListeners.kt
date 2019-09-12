@@ -15,14 +15,12 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
 
 
-abstract class CaseTaskListener(val om: ObjectMapper) : ExecutionListener {
-  override fun notify(execution: DelegateExecution) = notify(CaseTaskDelegateExecution(om, execution))
+abstract class CaseTaskListener : ExecutionListener {
+  override fun notify(execution: DelegateExecution) = notify(CaseTaskDelegateExecution(execution))
   abstract fun notify(delegateExecution: CaseTaskDelegateExecution)
 }
 
-class CaseExecutionOnStartListener(
-    om: ObjectMapper = jacksonObjectMapper()
-) : CaseTaskListener(om) {
+class CaseExecutionOnStartListener : CaseTaskListener() {
 
   override fun notify(delegateExecution: CaseTaskDelegateExecution) {
     val caseExecutionId = (delegateExecution.delegateExecution.getVariable(CaseProcessBean.VARIABLES.caseExecutionId) as String).apply {
@@ -47,9 +45,7 @@ class CaseExecutionOnStartListener(
 
 }
 
-class CaseExecutionOnCompleteListener(
-    om: ObjectMapper = jacksonObjectMapper()
-) : CaseTaskListener(om) {
+class CaseExecutionOnCompleteListener : CaseTaskListener() {
   override fun notify(delegateExecution: CaseTaskDelegateExecution) {
     with(delegateExecution.repository) {
       save(findById(delegateExecution.caseExecutionId)!!.copy(state = BpmnCaseExecutionState.COMPLETED))
@@ -71,7 +67,6 @@ class CaseExecutionOnCompleteListener(
  * Data class wrapper that extends DelegateExecution with the relevant caseTask meta data.
  */
 data class CaseTaskDelegateExecution(
-    val om: ObjectMapper,
     val delegateExecution: DelegateExecution
 ) : DelegateExecution by delegateExecution {
   private val definitionRepository = CaseTaskDefinitionReadOnlyRepositoryFactory().create(delegateExecution)

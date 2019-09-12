@@ -6,6 +6,7 @@ import io.holunda.extension.casemanagement.listener.ReevaluateSentriesDelegate
 import io.holunda.talk.camundacon.process.DeptRecoveryProcessBean
 import io.holunda.talk.camundacon.process.DeptRecoveryProcessData
 import io.holunda.talk.camundacon.process.StartDeptRecoveryProcessCommand
+import org.camunda.bpm.engine.variable.Variables
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
 import org.camunda.bpm.spring.boot.starter.event.PostDeployEvent
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -34,7 +35,7 @@ class ProcessStarter(val om:ObjectMapper, val process : DeptRecoveryProcessBean)
   @EventListener
   fun onStart(start: PostDeployEvent) = repeat(1) {
     val initialData = DeptRecoveryProcessData()
-    process.start(StartDeptRecoveryProcessCommand(initialData.uuid, om.writeValueAsString(initialData)))
+    process.start(StartDeptRecoveryProcessCommand(initialData.uuid,  initialData))
   }
 }
 

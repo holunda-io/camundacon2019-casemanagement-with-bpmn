@@ -1,7 +1,5 @@
 package io.holunda.talk.camundacon.process
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.stereotype.Component
 
@@ -14,9 +12,9 @@ interface DeptRecoveryProcessSentry {
 
 // could be using DMN
 @Component
-class RemindViaTelephoneSentry(val om: ObjectMapper) : DeptRecoveryProcessSentry {
-  override fun evaluate(execution: DelegateExecution): Boolean = with(execution.getProcessData(om)) {
-    !helloLetterSent
+class RemindViaTelephoneSentry : DeptRecoveryProcessSentry {
+  override fun evaluate(execution: DelegateExecution): Boolean = with(execution.getProcessData()) {
+    helloLetterSent
       &&
       !deptPaid
       &&
@@ -28,9 +26,9 @@ class RemindViaTelephoneSentry(val om: ObjectMapper) : DeptRecoveryProcessSentry
 
 // could be using DMN
 @Component
-class RemindViaMailSentry(val om: ObjectMapper) : DeptRecoveryProcessSentry {
-  override fun evaluate(execution: DelegateExecution): Boolean = with(execution.getProcessData(om)) {
-    !helloLetterSent
+class RemindViaMailSentry : DeptRecoveryProcessSentry {
+  override fun evaluate(execution: DelegateExecution): Boolean = with(execution.getProcessData()) {
+    helloLetterSent
       &&
       !deptPaid
       &&
@@ -38,6 +36,5 @@ class RemindViaMailSentry(val om: ObjectMapper) : DeptRecoveryProcessSentry {
   }
 }
 
- fun DelegateExecution.getProcessData(om: ObjectMapper): DeptRecoveryProcessData =
-   om.readValue(this.getVariable(DeptRecoveryProcessData.KEY) as String)
+ fun DelegateExecution.getProcessData(): DeptRecoveryProcessData = this.getVariable(DeptRecoveryProcessData.KEY) as DeptRecoveryProcessData
 

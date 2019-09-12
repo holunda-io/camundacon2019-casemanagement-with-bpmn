@@ -7,3 +7,7 @@ doManualStart
 sendHelloLetter
 
 isExpanded="false"
+
+
+
+{"caseTaskDefinitions":[{"hasSentry":true,"automaticStart":false,"key":"remindViaMail","name":"Remind via Mail","type":"HUMAN_TASK","repetitionRule":"MANUAL_START","manualStart":true,"required":false,"sentryOnPartExpression":"${remindViaMailSentry.evaluate(execution)}"},{"hasSentry":true,"automaticStart":false,"key":"remindViaTelephone","name":"Remind via Telephone","type":"HUMAN_TASK","repetitionRule":"MANUAL_START","manualStart":true,"required":false,"sentryOnPartExpression":"${remindViaTelephoneSentry.evaluate(execution)}"},{"hasSentry":false,"automaticStart":false,"key":"sendHelloLetter","name":"Send \"Hello\" Letter","type":"HUMAN_TASK","repetitionRule":"NONE","manualStart":true,"required":false,"sentryOnPartExpression":null}]}

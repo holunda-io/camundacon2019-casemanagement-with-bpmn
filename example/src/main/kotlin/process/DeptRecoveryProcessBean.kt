@@ -6,7 +6,6 @@ import io.holunda.extension.casemanagement.CaseProcessInstanceWrapper
 import io.holunda.extension.casemanagement.EnumWithValue
 import io.holunda.extension.casemanagement.command.StartCaseTaskCommand
 import io.holunda.extension.casemanagement.command.StartProcessCommand
-import io.holunda.talk.camundacon.Json
 import mu.KLogging
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
@@ -17,16 +16,14 @@ import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.camunda.bpm.engine.variable.VariableMap
 import org.camunda.bpm.engine.variable.Variables
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
 @Component(DeptRecoveryProcessBean.KEY)
 class DeptRecoveryProcessBean(
   repositoryService: RepositoryService,
-  runtimeService: RuntimeService,
-  om: ObjectMapper
-) : CaseProcessBean<StartDeptRecoveryProcessCommand, DeptRecoveryProcessInstance>(repositoryService = repositoryService, runtimeService = runtimeService, om = om) {
+  runtimeService: RuntimeService
+) : CaseProcessBean<StartDeptRecoveryProcessCommand, DeptRecoveryProcessInstance>(repositoryService = repositoryService, runtimeService = runtimeService) {
   companion object {
     const val KEY = "deptRecoveryProcess"
   }
@@ -45,32 +42,32 @@ class DeptRecoveryProcessBean(
   }
 
   @Bean
-  fun onHelloLetterSent(om:ObjectMapper) : ExecutionListener = ExecutionListener {
-    val data : DeptRecoveryProcessData = it.getProcessData(om).copy(deptPaid = true)
-    it.setVariable(DeptRecoveryProcessData.KEY, om.writeValueAsString(data))
+  fun onHelloLetterSent() : ExecutionListener = ExecutionListener {
+    val data : DeptRecoveryProcessData = it.getProcessData().copy(helloLetterSent = true)
+    it.setVariable(DeptRecoveryProcessData.KEY, data)
   }
 
-  @EventListener(condition = """#e.getCurrentActivityId().equals("milestone_deptPaid") && #e.getEventName().equals("end") """)
-  fun onDeptPaid(e: DelegateExecution) {
-    val paid = (e.getVariable(VARIABLES.deptPaid) as Boolean?)?:false
-    val data : DeptRecoveryProcessData = e.getProcessData(om).copy(deptPaid = paid)
-    e.setVariable(DeptRecoveryProcessData.KEY, om.writeValueAsString(data))
-    e.removeVariable(VARIABLES.deptPaid)
+  @Bean
+  fun onDeptPaid(): ExecutionListener = ExecutionListener {
+    val paid = (it.getVariable(VARIABLES.deptPaid) as Boolean?)?:false
+    val data : DeptRecoveryProcessData = it.getProcessData().copy(deptPaid = paid)
+    it.setVariable(DeptRecoveryProcessData.KEY,data)
+    it.removeVariable(VARIABLES.deptPaid)
   }
 
   override val key = KEY
 
-  override fun wrap(processInstance: ProcessInstance): DeptRecoveryProcessInstance = DeptRecoveryProcessInstance(processInstance, runtimeService, om)
+  override fun wrap(processInstance: ProcessInstance): DeptRecoveryProcessInstance = DeptRecoveryProcessInstance(processInstance, runtimeService)
 }
 
-class DeptRecoveryProcessInstance(processInstance: ProcessInstance, runtimeService: RuntimeService, om: ObjectMapper) : CaseProcessInstanceWrapper(processInstance, runtimeService, om) {
+class DeptRecoveryProcessInstance(processInstance: ProcessInstance, runtimeService: RuntimeService) : CaseProcessInstanceWrapper(processInstance, runtimeService) {
 
 }
 
 /**
  * Command to start the process.
  */
-data class StartDeptRecoveryProcessCommand(override val businessKey: String, val processData: Json) : StartProcessCommand {
+data class StartDeptRecoveryProcessCommand(override val businessKey: String, val processData: DeptRecoveryProcessData) : StartProcessCommand {
   override val variables: VariableMap = Variables.putValue(DeptRecoveryProcessData.KEY, processData)
 }
 
