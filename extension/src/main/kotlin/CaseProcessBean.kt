@@ -13,28 +13,34 @@ import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.engine.delegate.JavaDelegate
 import org.camunda.bpm.engine.runtime.ProcessInstance
-import java.lang.IllegalStateException
+import java.util.*
 
-abstract class CaseProcess<C : StartProcessCommand, I : CaseProcessInstanceWrapper>(
-    val runtimeService: RuntimeService,
-    val repositoryService: RepositoryService,
-    val om: ObjectMapper = jacksonObjectMapper()
-) {
+
+interface CaseProcess<C : StartProcessCommand, I : CaseProcessInstanceWrapper> {
+
+  fun start(cmd: C): I
+
+  fun findByBusinessKey(businessKey: String): Optional<I>
+}
+
+abstract class CaseProcessBean<C : StartProcessCommand, I : CaseProcessInstanceWrapper>(
+  val runtimeService: RuntimeService,
+  val repositoryService: RepositoryService,
+  val om: ObjectMapper = jacksonObjectMapper()
+) : CaseProcess<C, I> {
   companion object {
-    const val TASK_LIFECYCLE_KEY = "taskLifecycle"
     const val SUBPROCESS_SENTRY_REEVALUATION = "subprocess_sentry_reevaluation"
   }
 
   object VARIABLES {
     const val caseProcessDefinition = "caseProcessDefinition"
-    const val taskStageLifecycle = "taskStageLifecycle"
     const val bpmnCaseExecutionEntities = "bpmnCaseExecutionEntities"
     const val caseExecutionId = "caseExecutionId"
   }
 
   abstract val key: String
 
-  fun start(cmd: C): I {
+  override fun start(cmd: C): I {
     val processInstance = runtimeService.startProcessInstanceByKey(key, cmd.businessKey, cmd.variables)
 
     return wrap(processInstance)
@@ -42,29 +48,24 @@ abstract class CaseProcess<C : StartProcessCommand, I : CaseProcessInstanceWrapp
 
   fun onProcessStart(): ExecutionListener = CaseProcessStartListener()
 
-  fun onCaseExecutionStart() : ExecutionListener = CaseExecutionOnStartListener(om)
-  fun onCaseExecutionComplete() : ExecutionListener = CaseExecutionOnCompleteListener(om)
-  fun onReevaluateSentries() : JavaDelegate =  ReevaluateSentriesDelegate(om)
+  fun onCaseExecutionStart(): ExecutionListener = CaseExecutionOnStartListener(om)
+  fun onCaseExecutionComplete(): ExecutionListener = CaseExecutionOnCompleteListener(om)
+  fun onReevaluateSentries(): JavaDelegate = ReevaluateSentriesDelegate()
 
-  fun findByBusinessKey(businessKey:String) : I? {
-    val proc = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey(businessKey)
-        .processDefinitionKey(key)
-        .active()
-        .singleResult() ?: null
+  override fun findByBusinessKey(businessKey: String): Optional<I> {
+    val proc: ProcessInstance? = runtimeService.createProcessInstanceQuery()
+      .processInstanceBusinessKey(businessKey)
+      .processDefinitionKey(key)
+      .active()
+      .singleResult()
 
-    return if (proc != null) {
-      wrap(proc)
-    } else {
-      null
-    }
+    return Optional.ofNullable(proc).map { wrap(it) }
   }
 
-  fun loadForBusinessKey(businessKey:String) = findByBusinessKey(businessKey) ?: throw IllegalStateException("no processInstance found with key=$key and businessKey=$businessKey")
+  fun loadForBusinessKey(businessKey: String): I = findByBusinessKey(businessKey).orElseThrow {  IllegalStateException("no processInstance found with key=$key and businessKey=$businessKey") }
 
-  fun startCaseTask(cmd: StartCaseTaskCommand) {
-    findByBusinessKey(cmd.businessKey)?.startManually(cmd.taskKey)
-  }
+  fun startCaseTask(cmd: StartCaseTaskCommand) : Optional<String> = findByBusinessKey(cmd.businessKey).flatMap { it.startManually(cmd.taskKey) }
+
 
   abstract fun wrap(processInstance: ProcessInstance): I
 }

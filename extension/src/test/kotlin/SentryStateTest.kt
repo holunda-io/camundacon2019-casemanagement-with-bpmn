@@ -1,8 +1,7 @@
 package io.holunda.extension.casemanagement
 
-import _test.DummyCaseProcess
-import _test.DummyCaseProcess.CaseTask
-import _test.DummyCaseProcess.CaseTask.manualStart_repetitionComplete_withSentry
+import _test.DummyCaseProcessBean
+import _test.DummyCaseProcessBean.CaseTask.manualStart_repetitionComplete_withSentry
 import cmmn.BpmnCaseExecutionState
 import io.holunda.extension.casemanagement._test.AND
 import io.holunda.extension.casemanagement._test.GIVEN
@@ -52,7 +51,7 @@ class SentryStateTest : AbstractDummyCaseProcessTest() {
       // the sentry evaluation changes
       .`the sentry for task $ evaluates to $`(manualStart_repetitionComplete_withSentry, false)
       .AND
-      .`the userTask $ is completed`(DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE_WITH_SENTRY)
+      .`the userTask $ is completed`(DummyCaseProcessBean.Elements.USERTASK_MS_REPETITION_COMPLETE_WITH_SENTRY)
 
     THEN
       .`all pending executions for task $ have state $`(manualStart_repetitionComplete_withSentry, BpmnCaseExecutionState.DISABLED)
@@ -103,6 +102,6 @@ class SentryStateTest : AbstractDummyCaseProcessTest() {
       .`the case process is started`()
 
     THEN
-      .`the process is waiting at $`(DummyCaseProcess.ProcessTask.keep_alive)
+      .`the process is waiting at $`(DummyCaseProcessBean.ProcessTask.keep_alive)
   }
 }

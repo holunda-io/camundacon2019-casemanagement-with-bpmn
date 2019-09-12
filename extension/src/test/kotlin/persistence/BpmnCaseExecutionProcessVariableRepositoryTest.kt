@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicReference
 class BpmnCaseExecutionProcessVariableRepositoryTest {
 
   private val repository = BpmnCaseExecutionProcessVariableRepository(
-      executions = mutableListOf(),
-      commit = {}
+    executions = mutableListOf(),
+    commit = {}
   )
 
   @Test
@@ -46,8 +46,8 @@ class BpmnCaseExecutionProcessVariableRepositoryTest {
     val fakeEntity = BpmnCaseExecutionEntity(id = "1", caseTaskKey = "foo")
 
     assertThatThrownBy { repository.save(fakeEntity) }
-        .isInstanceOf(IllegalArgumentException::class.java)
-        .hasMessageContaining("entity with id=1 does not exist")
+      .isInstanceOf(IllegalArgumentException::class.java)
+      .hasMessageContaining("entity with id=1 does not exist")
   }
 
   @Test
@@ -76,10 +76,10 @@ class BpmnCaseExecutionProcessVariableRepositoryTest {
     val store = AtomicReference<String>()
 
     val storingRepository = BpmnCaseExecutionProcessVariableRepository(
-        executions = mutableListOf(),
-        commit = {
-          store.set(om.writeValueAsString(BpmnCaseExecutionEntities(it)))
-        }
+      executions = mutableListOf(),
+      commit = {
+        store.set(om.writeValueAsString(BpmnCaseExecutionEntities(it)))
+      }
     )
 
     assertThat(store.get()).isNull()
@@ -120,19 +120,19 @@ class BpmnCaseExecutionProcessVariableRepositoryTest {
 
     // find all
     assertThat(repository.query(BpmnCaseExecutionQuery()))
-            .containsExactlyInAnyOrder(fooAvailable, fooEnabled, barAvailable,  barEnabled)
+      .containsExactlyInAnyOrder(fooAvailable, fooEnabled, barAvailable, barEnabled)
 
     // find by key
     assertThat(repository.query(BpmnCaseExecutionQuery(caseTaskKey = "foo")))
-            .containsExactlyInAnyOrder(fooEnabled,fooAvailable)
+      .containsExactlyInAnyOrder(fooEnabled, fooAvailable)
 
     // find by state
     assertThat(repository.query(BpmnCaseExecutionQuery(state = BpmnCaseExecutionState.ENABLED)))
-            .containsExactlyInAnyOrder(fooEnabled,barEnabled)
+      .containsExactlyInAnyOrder(fooEnabled, barEnabled)
 
     // find by state and key
-    assertThat(repository.query(BpmnCaseExecutionQuery(caseTaskKey= "foo", state = BpmnCaseExecutionState.ENABLED)))
-            .containsExactlyInAnyOrder(fooEnabled)
+    assertThat(repository.query(BpmnCaseExecutionQuery(caseTaskKey = "foo", state = BpmnCaseExecutionState.ENABLED)))
+      .containsExactlyInAnyOrder(fooEnabled)
 
   }
 }

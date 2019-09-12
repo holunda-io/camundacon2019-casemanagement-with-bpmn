@@ -4,6 +4,10 @@ out/
 .idea/
 *.iml
 
+presentation
+
+_archive/
+
 # Ignore Gradle GUI config
 gradle-app.setting
 

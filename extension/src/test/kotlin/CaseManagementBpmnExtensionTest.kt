@@ -1,6 +1,6 @@
 package io.holunda.extension.casemanagement
 
-import _test.DummyCaseProcess
+import _test.DummyCaseProcessBean
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.tngtech.jgiven.annotation.ProvidedScenarioState
 import io.holunda.extension.casemanagement._test.DualScenarioTest
@@ -13,12 +13,16 @@ import org.camunda.bpm.engine.test.Deployment
 import org.camunda.bpm.engine.test.ProcessEngineRule
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests
 import org.camunda.bpm.engine.test.mock.MockExpressionManager
+import org.camunda.spin.plugin.impl.SpinProcessEnginePlugin
 import org.junit.Rule
 import java.util.*
 
 
 internal class CamundaTestConfiguration : StandaloneInMemProcessEngineConfiguration() {
   init {
+    if (processEnginePlugins == null) {
+      processEnginePlugins = mutableListOf()
+    }
     expressionManager = MockExpressionManager()
     jobExecutorActivate = false
     isMetricsEnabled = false
@@ -29,14 +33,13 @@ internal class CamundaTestConfiguration : StandaloneInMemProcessEngineConfigurat
 
     customPostBPMNParseListeners = ArrayList()
     setCustomJobHandlers(ArrayList())
+
+    processEnginePlugins.add(SpinProcessEnginePlugin())
   }
 }
 
-@Deployment(resources = [DummyCaseProcess.BPMN])
+@Deployment(resources = [DummyCaseProcessBean.BPMN])
 abstract class AbstractDummyCaseProcessTest : DualScenarioTest<DummyCaseProcessGivenWhenStage, DummyCaseProcessThenStage>() {
-  companion object : KLogging() {
-    val om = jacksonObjectMapper()
-  }
 
   @ProvidedScenarioState
   @get:Rule

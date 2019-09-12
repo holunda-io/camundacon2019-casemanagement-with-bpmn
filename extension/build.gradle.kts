@@ -10,24 +10,33 @@ dependencies {
   api("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
 
   implementation(platform("org.camunda.bpm:camunda-bom:${Versions.camunda}"))
+  //implementation(platform("org.camunda.spin:camunda-spin-bom:${Versions.camundaSpin}"))
 
   //
   // CAMUNDA
   //
   implementation("org.camunda.bpm:camunda-engine")
+  implementation("org.camunda.bpm:camunda-engine-plugin-spin:${Versions.camunda}")
+  implementation("org.camunda.spin:camunda-spin-dataformat-json-jackson:${Versions.camundaSpin}")
 
+  //
+  // JACKSON
+  //
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jackson}")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${Versions.jackson}")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Versions.jackson}")
 
   //
   // KOTLIN
   //
-  implementation("io.github.microutils:kotlin-logging:1.6.26")
+  implementation("io.github.microutils:kotlin-logging:${Versions.kotlinLogging}")
   implementation(kotlin("stdlib-jdk8"))
 
   //
   // LOGGING
   //
   testImplementation("ch.qos.logback:logback-classic:1.2.3")
-  testImplementation("io.github.microutils:kotlin-logging:1.7.6")
+  testImplementation("io.github.microutils:kotlin-logging:${Versions.kotlinLogging}")
 
   //
   // TEST

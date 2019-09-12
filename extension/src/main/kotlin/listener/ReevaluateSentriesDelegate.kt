@@ -1,7 +1,6 @@
 package io.holunda.extension.casemanagement.listener
 
 import cmmn.BpmnCaseExecutionState
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.holunda.extension.casemanagement.persistence.BpmCaseExecutionRepositoryFactory
 import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionQuery
 import io.holunda.extension.casemanagement.persistence.CaseTaskDefinitionReadOnlyRepositoryFactory
@@ -9,10 +8,13 @@ import io.holunda.extension.casemanagement.sentry.evaluateSentryCondition
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.JavaDelegate
 
-class ReevaluateSentriesDelegate(private val om: ObjectMapper) : JavaDelegate {
+/**
+ * When triggered, the state of manualStart caseTasks is reevaluated. Might result in enabling or disabling the state.
+ */
+class ReevaluateSentriesDelegate : JavaDelegate {
 
-  private val DelegateExecution.caseTaskDefinitionRepository get() = CaseTaskDefinitionReadOnlyRepositoryFactory(om).create(this.processInstance)
-  private val DelegateExecution.executionRepository get() = BpmCaseExecutionRepositoryFactory(om).create(this.processInstance)
+  private val DelegateExecution.caseTaskDefinitionRepository get() = CaseTaskDefinitionReadOnlyRepositoryFactory().create(this.processInstance)
+  private val DelegateExecution.executionRepository get() = BpmCaseExecutionRepositoryFactory().create(this.processInstance)
 
   override fun execute(execution: DelegateExecution) {
     for (caseTaskDefinition in execution.caseTaskDefinitionRepository.load()) {

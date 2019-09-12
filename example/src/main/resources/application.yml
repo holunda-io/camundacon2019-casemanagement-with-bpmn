@@ -1,6 +1,9 @@
 spring:
   application:
-    name: "camunda-case-application"
+    name: "dept-recovery-process-application"
+
+server:
+  port: 8080
 
 camunda:
   bpm:

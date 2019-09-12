@@ -8,6 +8,8 @@ repositories {
 
   maven("https://jitpack.io")
 
+  maven("https://maven.vaadin.com/vaadin-addons")
+
   // note: for camunda-ee to work, add  credentials to $HOME/.gradle/gradle.properties
   maven("https://app.camunda.com/nexus/content/repositories/camunda-bpm-ee") {
     name = "camunda-bpm-ee"

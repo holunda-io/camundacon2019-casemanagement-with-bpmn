@@ -31,17 +31,17 @@ interface CaseProcessInstance {
 }
 
 abstract class CaseProcessInstanceWrapper(
-  private val processInstance: ProcessInstance,
-  private val runtimeService: RuntimeService,
-  private val objectMapper: ObjectMapper = jacksonObjectMapper()
+   val processInstance: ProcessInstance,
+   val runtimeService: RuntimeService,
+   val objectMapper: ObjectMapper = jacksonObjectMapper()
 ) : ProcessInstance by processInstance, CaseProcessInstance {
 
-  override val repository get() = BpmCaseExecutionRepositoryFactory(objectMapper).create(runtimeService, processInstanceId)
+  override val repository get() = BpmCaseExecutionRepositoryFactory().create(runtimeService, processInstanceId)
 
   override val caseProcessDefinition
     get() = objectMapper.readValue<CaseProcessDefinition>(runtimeService.getVariable(
       processInstanceId,
-      CaseProcess.VARIABLES.caseProcessDefinition) as String
+      CaseProcessBean.VARIABLES.caseProcessDefinition) as String
     )
 
   override val bpmnCaseExecutionEntities
@@ -58,7 +58,7 @@ abstract class CaseProcessInstanceWrapper(
 
     val execution = enabled.first()
     val variables = Variables.putValueTyped(
-      CaseProcess.VARIABLES.caseExecutionId,
+      CaseProcessBean.VARIABLES.caseExecutionId,
       Variables.stringValue(execution.id, true)
     )
 
@@ -71,7 +71,7 @@ abstract class CaseProcessInstanceWrapper(
   }
 
   override fun triggerSentryReevaluation() = runtimeService
-    .createSignalEvent("${CaseProcess.SUBPROCESS_SENTRY_REEVALUATION}_$processInstanceId")
+    .createSignalEvent("${CaseProcessBean.SUBPROCESS_SENTRY_REEVALUATION}_$processInstanceId")
     .withoutTenantId()
     .send()
 

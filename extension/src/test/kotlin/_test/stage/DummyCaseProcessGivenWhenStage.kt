@@ -1,7 +1,7 @@
 package io.holunda.extension.casemanagement._test.stage
 
-import _test.DummyCaseProcess
-import _test.DummyCaseProcess.CaseTask
+import _test.DummyCaseProcessBean
+import _test.DummyCaseProcessBean.CaseTask
 import _test.DummyCaseProcessInstance
 import _test.ManualStartRepetitionCompleteWithSentryResolver
 import _test.Start
@@ -37,13 +37,13 @@ class DummyCaseProcessGivenWhenStage : Stage<DummyCaseProcessGivenWhenStage>() {
   private val startedTasks: MutableMap<CaseTask, MutableList<Optional<String>>> = mutableMapOf()
 
   @ProvidedScenarioState
-  private val repositoryFactory = BpmCaseExecutionRepositoryFactory(objectMapper)
+  private val repositoryFactory = BpmCaseExecutionRepositoryFactory()
 
   private val manualStartRepetitionCompleteWithSentryResolver = ManualStartRepetitionCompleteWithSentryResolver()
 
-  private val process: DummyCaseProcess by lazy {
-    DummyCaseProcess(camunda.runtimeService, camunda.repositoryService).apply {
-      CamundaMockito.registerInstance(this)
+  private val process: DummyCaseProcessBean by lazy {
+    DummyCaseProcessBean(camunda.runtimeService, camunda.repositoryService).apply {
+      CamundaMockito.registerInstance("dummyCaseProcess", this)
 
       CamundaMockito.registerInstance("manualStartRepetitionCompleteWithSentryResolver", manualStartRepetitionCompleteWithSentryResolver)
     }

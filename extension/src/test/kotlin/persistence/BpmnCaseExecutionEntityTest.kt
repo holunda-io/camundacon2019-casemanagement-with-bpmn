@@ -3,12 +3,13 @@ package io.holunda.extension.casemanagement.persistence
 import cmmn.BpmnCaseExecutionState
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.holunda.extension.casemanagement.jackson.configureObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class BpmnCaseExecutionEntityTest {
 
-  private val om = jacksonObjectMapper()
+  private val om = configureObjectMapper()
 
   @Test
   fun `new entity is transient and has initial state`() {
@@ -37,9 +38,9 @@ class BpmnCaseExecutionEntityTest {
     val e2 = BpmnCaseExecutionEntity(id = "2", caseTaskKey = "foo")
 
 
-    val original = BpmnCaseExecutionEntities(e1,e2)
+    val original = BpmnCaseExecutionEntities(listOf(e1,e2))
 
-    val json = om.writeValueAsString(original)
+    val json = om.writeValueAsString(original)!!
 
     val fromJson : BpmnCaseExecutionEntities = om.readValue(json)
 

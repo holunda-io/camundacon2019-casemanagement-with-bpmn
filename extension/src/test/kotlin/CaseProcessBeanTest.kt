@@ -1,8 +1,8 @@
 package io.holunda.extension.casemanagement
 
-import _test.DummyCaseProcess.CaseTask
-import _test.DummyCaseProcess.CaseTask.*
-import _test.DummyCaseProcess.Elements.USERTASK_MS_REPETITION_COMPLETE
+import _test.DummyCaseProcessBean.CaseTask
+import _test.DummyCaseProcessBean.CaseTask.*
+import _test.DummyCaseProcessBean.Elements.USERTASK_MS_REPETITION_COMPLETE
 import cmmn.BpmnCaseExecutionState
 import io.holunda.extension.casemanagement._test.AND
 import io.holunda.extension.casemanagement._test.GIVEN
@@ -10,7 +10,7 @@ import io.holunda.extension.casemanagement._test.THEN
 import io.holunda.extension.casemanagement._test.WHEN
 import org.junit.Test
 
-class CaseProcessTest : AbstractDummyCaseProcessTest() {
+class CaseProcessBeanTest : AbstractDummyCaseProcessTest() {
 
   @Test
   fun `manually start and stop case task`() {
@@ -42,13 +42,13 @@ class CaseProcessTest : AbstractDummyCaseProcessTest() {
       .`the case process is started`()
 
     THEN
-      .`the process does not have a variable $`(CaseProcess.VARIABLES.caseExecutionId)
+      .`the process does not have a variable $`(CaseProcessBean.VARIABLES.caseExecutionId)
 
     WHEN
       .`a caseTask $ is manually started`(manualStart_repetitionComplete)
 
     THEN
-      .`the process does not have a variable $`(CaseProcess.VARIABLES.caseExecutionId)
+      .`the process does not have a variable $`(CaseProcessBean.VARIABLES.caseExecutionId)
   }
 
   /**

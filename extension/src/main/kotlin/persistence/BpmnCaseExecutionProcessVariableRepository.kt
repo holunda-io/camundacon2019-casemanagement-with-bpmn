@@ -1,10 +1,9 @@
 package io.holunda.extension.casemanagement.persistence
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import io.holunda.extension.casemanagement.CaseProcess
+import io.holunda.extension.casemanagement.CaseProcessBean
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.engine.variable.value.ObjectValue
 import java.util.*
 
 
@@ -57,33 +56,33 @@ data class BpmnCaseExecutionProcessVariableRepository(
   private fun nullOrEqual(value: Any, param: Any?) = (param ?: value) == value
 }
 
-class BpmCaseExecutionRepositoryFactory(val om: ObjectMapper) {
+class BpmCaseExecutionRepositoryFactory {
 
-  private fun initEntities(json: Any?) = json
-      ?.let { it as String }
-      ?.let { om.readValue<BpmnCaseExecutionEntities>(it) }
-      ?: BpmnCaseExecutionEntities(mutableListOf())
 
   fun create(delegateExecution: DelegateExecution): BpmnCaseExecutionProcessVariableRepository {
-    val list = initEntities(delegateExecution.getVariable(CaseProcess.VARIABLES.bpmnCaseExecutionEntities))
-
-    val commit: BpmnCaseExecutionEntitiesStore = {
-      val json = om.writeValueAsString(BpmnCaseExecutionEntities(it))
-      delegateExecution.setVariable(CaseProcess.VARIABLES.bpmnCaseExecutionEntities, json)
+    fun  initList(): BpmnCaseExecutionEntities {
+      val value: BpmnCaseExecutionEntities? = delegateExecution.getVariable(CaseProcessBean.VARIABLES.bpmnCaseExecutionEntities) as BpmnCaseExecutionEntities?
+      return  value?: BpmnCaseExecutionEntities(mutableListOf())
     }
 
-    return BpmnCaseExecutionProcessVariableRepository(list.executions.toMutableList(), commit)
+
+    val commit: BpmnCaseExecutionEntitiesStore = {
+      delegateExecution.setVariable(CaseProcessBean.VARIABLES.bpmnCaseExecutionEntities, BpmnCaseExecutionEntities(it))
+    }
+
+    return BpmnCaseExecutionProcessVariableRepository(initList().executions.toMutableList(), commit)
   }
 
   fun create(runtimeService: RuntimeService, processInstanceId: String): BpmnCaseExecutionProcessVariableRepository {
-    val list = initEntities(runtimeService.getVariable(processInstanceId, CaseProcess.VARIABLES.bpmnCaseExecutionEntities))
-
+    fun  initList(): BpmnCaseExecutionEntities {
+      val value: BpmnCaseExecutionEntities? = runtimeService.getVariable(processInstanceId, CaseProcessBean.VARIABLES.bpmnCaseExecutionEntities) as BpmnCaseExecutionEntities?
+      return  value?: BpmnCaseExecutionEntities(mutableListOf())
+    }
     val commit: BpmnCaseExecutionEntitiesStore = {
-      val json = om.writeValueAsString(BpmnCaseExecutionEntities(it))
-      runtimeService.setVariable(processInstanceId, CaseProcess.VARIABLES.bpmnCaseExecutionEntities, json)
+      runtimeService.setVariable(processInstanceId, CaseProcessBean.VARIABLES.bpmnCaseExecutionEntities, it)
     }
 
-    return BpmnCaseExecutionProcessVariableRepository(list.executions.toMutableList(), commit)
+    return BpmnCaseExecutionProcessVariableRepository(initList().executions.toMutableList(), commit)
   }
 
 }

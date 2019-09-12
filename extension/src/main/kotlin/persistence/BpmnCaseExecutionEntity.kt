@@ -39,10 +39,6 @@ data class BpmnCaseExecutionEntity(
 /**
  * This is an abstraction of a list of executions, used to store as json.
  */
-data class BpmnCaseExecutionEntities(val executions: List<BpmnCaseExecutionEntity>) {
-  companion object {
-    operator fun invoke(vararg executions: BpmnCaseExecutionEntity) = BpmnCaseExecutionEntities(executions.toList())
-  }
-}
+data class BpmnCaseExecutionEntities(val executions: List<BpmnCaseExecutionEntity>)
 
 

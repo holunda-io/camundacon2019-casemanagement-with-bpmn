@@ -3,7 +3,7 @@ package io.holunda.extension.casemanagement.listener
 import cmmn.BpmnCaseExecutionState
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.holunda.extension.casemanagement.CaseProcess
+import io.holunda.extension.casemanagement.CaseProcessBean
 import io.holunda.extension.casemanagement.bpmn.CaseTaskDefinition
 import io.holunda.extension.casemanagement.cmmn.RepetitionRule
 import io.holunda.extension.casemanagement.persistence.BpmCaseExecutionRepositoryFactory
@@ -25,8 +25,8 @@ class CaseExecutionOnStartListener(
 ) : CaseTaskListener(om) {
 
   override fun notify(delegateExecution: CaseTaskDelegateExecution) {
-    val caseExecutionId = (delegateExecution.delegateExecution.getVariable(CaseProcess.VARIABLES.caseExecutionId) as String).apply {
-      delegateExecution.delegateExecution.setVariableLocal(CaseProcess.VARIABLES.caseExecutionId, this)
+    val caseExecutionId = (delegateExecution.delegateExecution.getVariable(CaseProcessBean.VARIABLES.caseExecutionId) as String).apply {
+      delegateExecution.delegateExecution.setVariableLocal(CaseProcessBean.VARIABLES.caseExecutionId, this)
     }
 
     with(delegateExecution.repository) {
@@ -67,18 +67,21 @@ class CaseExecutionOnCompleteListener(
   }
 }
 
+/**
+ * Data class wrapper that extends DelegateExecution with the relevant caseTask meta data.
+ */
 data class CaseTaskDelegateExecution(
     val om: ObjectMapper,
     val delegateExecution: DelegateExecution
 ) : DelegateExecution by delegateExecution {
-  private val definitionRepository = CaseTaskDefinitionReadOnlyRepositoryFactory(om).create(delegateExecution)
+  private val definitionRepository = CaseTaskDefinitionReadOnlyRepositoryFactory().create(delegateExecution)
 
   val caseTaskDefinition: CaseTaskDefinition by lazy {
     definitionRepository.findByKey(delegateExecution.currentActivityId)
   }
 
-  val caseExecutionId by lazy { getVariableLocal(CaseProcess.VARIABLES.caseExecutionId) as String }
-  val repository: BpmnCaseExecutionProcessVariableRepository = BpmCaseExecutionRepositoryFactory(om).create(delegateExecution)
+  val caseExecutionId by lazy { getVariableLocal(CaseProcessBean.VARIABLES.caseExecutionId) as String }
+  val repository: BpmnCaseExecutionProcessVariableRepository = BpmCaseExecutionRepositoryFactory().create(delegateExecution)
 
   val repetitionRule = caseTaskDefinition.repetitionRule
 }

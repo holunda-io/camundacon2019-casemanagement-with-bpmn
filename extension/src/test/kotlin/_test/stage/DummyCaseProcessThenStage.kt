@@ -1,6 +1,6 @@
 package io.holunda.extension.casemanagement._test.stage
 
-import _test.DummyCaseProcess.CaseTask
+import _test.DummyCaseProcessBean.CaseTask
 import _test.DummyCaseProcessInstance
 import cmmn.BpmnCaseExecutionState
 import com.tngtech.jgiven.Stage

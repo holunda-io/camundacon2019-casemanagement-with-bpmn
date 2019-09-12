@@ -3,7 +3,7 @@ package io.holunda.extension.casemanagement.listener
 import cmmn.BpmnCaseExecutionState
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.holunda.extension.casemanagement.CaseProcess
+import io.holunda.extension.casemanagement.CaseProcessBean
 import io.holunda.extension.casemanagement.bpmn.parseCaseDefinitions
 import io.holunda.extension.casemanagement.persistence.BpmCaseExecutionRepositoryFactory
 import io.holunda.extension.casemanagement.persistence.BpmnCaseExecutionEntity
@@ -16,17 +16,15 @@ import org.camunda.bpm.engine.delegate.ExecutionListener
  * It parses the started ProcessInstances BPMN model for subprocesses that should behave like
  * case tasks and stores all data in a process variable.
  */
-class CaseProcessStartListener(
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
-) : ExecutionListener {
+class CaseProcessStartListener: ExecutionListener {
 
-  private val repositoryFactory = BpmCaseExecutionRepositoryFactory(objectMapper)
+  private val repositoryFactory = BpmCaseExecutionRepositoryFactory()
 
   override fun notify(execution: DelegateExecution) {
     val caseProcessDefinition = execution.bpmnModelInstance.parseCaseDefinitions().apply {
       execution.setVariable(
-        CaseProcess.VARIABLES.caseProcessDefinition,
-        objectMapper.writeValueAsString(this)
+        CaseProcessBean.VARIABLES.caseProcessDefinition,
+        this
       )
     }
 
@@ -38,7 +36,7 @@ class CaseProcessStartListener(
       val initialState: BpmnCaseExecutionState = when {
         caseTaskDefinition.manualStart && sentryCondition -> BpmnCaseExecutionState.ENABLED
         caseTaskDefinition.manualStart && !sentryCondition -> BpmnCaseExecutionState.DISABLED
-        else -> BpmnCaseExecutionState.NEW
+        else -> BpmnCaseExecutionState.AVAILABLE
         // TODO: automatic start
         //caseTaskDefinition.automaticStart && sentryCondition -> BpmnCaseExecutionState.ACTIVE
       }
