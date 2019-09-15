@@ -24,11 +24,23 @@ class DeptRecoveryProcessController(
     @RequestParam("businessKey") businessKey: String
   ) : ResponseEntity<StartProcessDto> {
 
-    val i = process.start(StartDeptRecoveryProcessCommand(businessKey))
-    val data = process.runtimeService.getVariable(i.processInstanceId, DeptRecoveryProcessData.KEY) as DeptRecoveryProcessData
-    return ResponseEntity.ok(StartProcessDto(businessKey, i.processInstanceId, data))
+    val instance = process.start(StartDeptRecoveryProcessCommand(businessKey))
+
+    return ResponseEntity.ok(StartProcessDto(
+      businessKey,
+      instance.processInstanceId,
+      instance.data,
+      instance.caseProcessDefinition,
+      instance.bpmnCaseExecutionEntities)
+    )
   }
-  data class StartProcessDto(val businessKey: String, val processInstanceId: String, val data : DeptRecoveryProcessData)
+  data class StartProcessDto(
+    val businessKey: String,
+    val processInstanceId: String,
+    val data : DeptRecoveryProcessData,
+    val caseTasks: CaseProcessDefinition,
+    val caseExecutions: BpmnCaseExecutionEntities
+  )
 
   @PostMapping("/{businessKey}/validAddress")
   fun setValidAddress(

@@ -10,7 +10,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1rn4vpd" sourceRef="StartEvent_1" targetRef="milestone_deptPaid" />
     <bpmn:sequenceFlow id="SequenceFlow_1i5fojs" sourceRef="milestone_deptPaid" targetRef="UserTask_1w96lql" />
     <bpmn:sequenceFlow id="SequenceFlow_0ml49gv" sourceRef="UserTask_1w96lql" targetRef="EndEvent_1jqowfx" />
-    <bpmn:subProcess id="sendHelloLetter" name="Send &#34;Hello&#34; Letter" triggeredByEvent="true">
+    <bpmn:subProcess id="sendHelloLetter" name="Send Hello Letter" triggeredByEvent="true">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="cmmnType" value="humanTask" />
@@ -52,7 +52,7 @@
         <bpmn:signalEventDefinition signalRef="Signal_17ma8xt" />
       </bpmn:startEvent>
       <bpmn:sequenceFlow id="SequenceFlow_1dn45v8" sourceRef="StartEvent_1skmbit" targetRef="Task_1ej60eu" />
-      <bpmn:userTask id="Task_1ej60eu" name="Do Call">
+      <bpmn:userTask id="Task_1ej60eu" name="Remind via telephone">
         <bpmn:incoming>SequenceFlow_1dn45v8</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_0sgn8qa</bpmn:outgoing>
       </bpmn:userTask>
@@ -76,7 +76,7 @@
         <bpmn:outgoing>SequenceFlow_1vd7bq7</bpmn:outgoing>
         <bpmn:signalEventDefinition id="SignalEventDefinition_1ypurda" signalRef="Signal_0mwkmea" />
       </bpmn:startEvent>
-      <bpmn:userTask id="UserTask_1dwp2e6" name="Send Mail">
+      <bpmn:userTask id="UserTask_1dwp2e6" name="Remend via email">
         <bpmn:incoming>SequenceFlow_1vd7bq7</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_0cvg6bg</bpmn:outgoing>
       </bpmn:userTask>
@@ -114,7 +114,7 @@
       <bpmn:incoming>SequenceFlow_1rn4vpd</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1i5fojs</bpmn:outgoing>
       <bpmn:conditionalEventDefinition camunda:variableName="deptPaid" camunda:variableEvent="change">
-        <bpmn:condition xsi:type="bpmn:tFormalExpression">${deptRecovered == true}</bpmn:condition>
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">${deptPaid == true}</bpmn:condition>
       </bpmn:conditionalEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:endEvent id="EndEvent_1jqowfx" name="Dept Recovery ended">

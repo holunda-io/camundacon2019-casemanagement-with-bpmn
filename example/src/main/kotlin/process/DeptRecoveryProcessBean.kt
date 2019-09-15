@@ -57,7 +57,10 @@ class DeptRecoveryProcessBean(
 class DeptRecoveryProcessInstance(
   processInstance: ProcessInstance,
   runtimeService: RuntimeService
-) : CaseProcessInstanceWrapper(processInstance, runtimeService)
+) : CaseProcessInstanceWrapper(processInstance, runtimeService) {
+
+  val data: DeptRecoveryProcessData get() = runtimeService.getVariable(processInstanceId, DeptRecoveryProcessData.KEY) as DeptRecoveryProcessData
+}
 
 /**
  * Command to start the process.
