@@ -3,6 +3,7 @@
 Modelling and Managing a Case with BPMN/DMN
 
 [![CamundaCon Talk](https://img.youtube.com/vi/-fyzL_b7gq8/0.jpg)](https://www.youtube.com/watch?v=-fyzL_b7gq8)
+Click for video
 
 # Demo Time
 
