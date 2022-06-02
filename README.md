@@ -2,6 +2,8 @@
 
 Modelling and Managing a Case with BPMN/DMN
 
+[![example](https://img.shields.io/badge/lifecycle-EXAMPLE-blue.svg)](https://github.com/holisticon#open-source-lifecycle)
+
 [![CamundaCon Talk](https://img.youtube.com/vi/-fyzL_b7gq8/0.jpg)](https://www.youtube.com/watch?v=-fyzL_b7gq8)
 Click for video
 
